@@ -37,6 +37,8 @@ git push
 
 其他设备再执行 `git pull` 即可同步。
 
+如果某台设备没有 `~/.codex/skills/*/SKILL.md` 用户自定义 skill，则无需新增 `skills/` 目录内容；只确认忽略规则、敏感信息扫描和现有脚本语法即可。
+
 ## 注意事项
 
 - 不要提交 `~/.codex/skills/.system/`、`~/.codex/plugins/`、`~/.codex/config.toml`。
