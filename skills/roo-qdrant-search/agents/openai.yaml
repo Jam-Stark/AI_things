@@ -1,0 +1,4 @@
+interface:
+  display_name: "Roo Qdrant Search"
+  short_description: "Query Roo Code Qdrant indexes from Codex."
+  default_prompt: "Search Roo Code semantic indexes stored in Qdrant using the configured embedder."
