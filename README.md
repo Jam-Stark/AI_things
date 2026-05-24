@@ -4,8 +4,12 @@
 
 当前主要内容：
 
+- `skills/pdf`: PDF 读取、生成与渲染验证工作流，强调用 Poppler/PNG 预览检查版式。
+- `skills/pdf2zh-paper-translator`: 从本地 Papers/Zotero/ZotMoov 或合法开放来源解析论文 PDF，并通过 pdf2zh + Gemini 翻译为中英双语/中文 PDF。
+- `skills/ppt-master`: 多格式资料到 SVG 页面再到 PPTX 的演示文稿生成流水线，包含模板、图表和图片生成辅助脚本。
 - `skills/rl-command-manager`: 管理 RL train/play 命令批次，生成 play 命令并做差异分析。
 - `skills/roo-qdrant-search`: 从 Codex 查询 Roo Code 写入 Qdrant 的语义代码索引。
+- `skills/zotero-zotmoov`: 记录 Zotero Desktop + ZotMoov 的本地导入、附件移动和验证流程。
 
 ## 使用方式
 
@@ -15,6 +19,10 @@
 git clone git@github.com:Jam-Stark/AI_things.git ~/workspace/AI_things
 ln -s ~/workspace/AI_things/skills/rl-command-manager ~/.codex/skills/rl-command-manager
 ln -s ~/workspace/AI_things/skills/roo-qdrant-search ~/.codex/skills/roo-qdrant-search
+ln -s ~/workspace/AI_things/skills/pdf ~/.codex/skills/pdf
+ln -s ~/workspace/AI_things/skills/pdf2zh-paper-translator ~/.codex/skills/pdf2zh-paper-translator
+ln -s ~/workspace/AI_things/skills/ppt-master ~/.codex/skills/ppt-master
+ln -s ~/workspace/AI_things/skills/zotero-zotmoov ~/.codex/skills/zotero-zotmoov
 ```
 
 如果目标路径已经存在，可以先确认是否需要备份或合并，再替换为软链接。
@@ -46,3 +54,6 @@ git push
 - 需要密钥的 skill 应通过环境变量读取，例如 `OPENROUTER_API_KEY` 或 `ROO_INDEX_EMBED_API_KEY`。
 - 设备差异配置建议放在本机环境变量、未跟踪的 `.env` 文件或单独的 local 配置里。
 - 导入其他设备上的 skill 前，先检查是否包含硬编码密钥或本机专用路径。
+- `pdf2zh-paper-translator` 需要 `GEMINI_API_KEY`，可通过 macOS Keychain、环境变量或本机 `~/.config/pdf2zh-paper-translator/env` 提供；本地论文库路径用 `PAPERS_DIR` 配置，输出目录可用 `DESKTOP_DIR` 配置。
+- `ppt-master` 的图片生成后端通过 `IMAGE_BACKEND` 和各服务商的环境变量配置，例如 `GEMINI_API_KEY`、`OPENAI_API_KEY`、`QWEN_API_KEY`、`ZHIPU_API_KEY` 等；不要把实际密钥写入仓库。
+- `zotero-zotmoov` 的设备路径通过 `ZOTERO_DATA_DIR`、`ZOTERO_PROFILE_DIR`、`ZOTERO_DB` 和 `PAPERS_DIR` 配置。

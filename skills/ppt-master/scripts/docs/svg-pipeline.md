@@ -1,0 +1,168 @@
+# SVG Pipeline Tools
+
+These tools cover post-processing, SVG validation, speaker notes, and PPTX export.
+
+## Recommended Pipeline
+
+Run these steps in order:
+
+```bash
+python3 scripts/total_md_split.py <project_path>
+python3 scripts/finalize_svg.py <project_path>
+python3 scripts/svg_to_pptx.py <project_path> -s final
+```
+
+## `finalize_svg.py`
+
+Unified post-processing entry point. This is the preferred way to run SVG cleanup.
+
+It aggregates:
+- `embed_icons.py`
+- `crop_images.py`
+- `fix_image_aspect.py`
+- `embed_images.py`
+- `flatten_tspan.py`
+- `svg_rect_to_path.py`
+
+## `svg_to_pptx.py`
+
+Convert project SVGs into PPTX.
+
+```bash
+python3 scripts/svg_to_pptx.py <project_path> -s final
+python3 scripts/svg_to_pptx.py <project_path> -s final --only native
+python3 scripts/svg_to_pptx.py <project_path> -s final --only legacy
+python3 scripts/svg_to_pptx.py <project_path> -s final --no-notes
+python3 scripts/svg_to_pptx.py <project_path> -t none
+python3 scripts/svg_to_pptx.py <project_path> -s final --auto-advance 3
+```
+
+Behavior:
+- Default output: timestamped pair in `exports/` — `<project_name>_<timestamp>.pptx` (native editable) + `<project_name>_<timestamp>_svg.pptx` (SVG snapshot)
+- Recommended source directory: `svg_final/`
+- Speaker notes are embedded automatically unless `--no-notes` is used
+
+Dependency:
+
+```bash
+pip install python-pptx
+```
+
+## `total_md_split.py`
+
+Split `total.md` into per-slide note files.
+
+```bash
+python3 scripts/total_md_split.py <project_path>
+python3 scripts/total_md_split.py <project_path> -o <output_directory>
+python3 scripts/total_md_split.py <project_path> -q
+```
+
+Requirements:
+- Each section begins with `# `
+- Heading text matches the SVG filename
+- Sections are separated by `---`
+
+## `svg_quality_checker.py`
+
+Validate SVG technical compliance.
+
+```bash
+python3 scripts/svg_quality_checker.py examples/project/svg_output/01_cover.svg
+python3 scripts/svg_quality_checker.py examples/project/svg_output
+python3 scripts/svg_quality_checker.py examples/project
+python3 scripts/svg_quality_checker.py examples/project --format ppt169
+python3 scripts/svg_quality_checker.py --all examples
+python3 scripts/svg_quality_checker.py examples/project --export
+```
+
+Checks include:
+- `viewBox`
+- banned elements
+- width/height consistency
+- line-break structure
+
+## `svg_position_calculator.py`
+
+Analyze and review supported chart coordinates after SVG generation.
+
+Use this after `svg_quality_checker.py` passes, and only for chart types supported by this script: `bar`, `pie` / `donut`, `radar`, `line` / `area` / `scatter`, and `grid`. Area charts do not have a separate calculator mode: use `calc line` for the upper boundary points, then close the filled region to the plot area's bottom baseline (`y_max`) in the SVG.
+
+### Calculate expected coordinates
+
+```bash
+python3 scripts/svg_position_calculator.py calc bar --data "A:185,B:142" --area "130,155,1200,480" --bar-width 120
+python3 scripts/svg_position_calculator.py calc line --data "0:50,10:80,20:120" --area "120,120,1200,600" --y-range "0,150"
+python3 scripts/svg_position_calculator.py calc pie --data "A:35,B:25,C:20" --center "420,400" --radius 200
+python3 scripts/svg_position_calculator.py calc grid --rows 2 --cols 3 --area "50,150,1230,670"
+```
+
+For an area chart, use the line output as the top boundary:
+
+```svg
+M first_x,first_y ... L last_x,last_y L last_x,y_max L first_x,y_max Z
+```
+
+Manually compare the calculator output with the coordinates already present in the generated SVG. If coordinates differ, update the SVG from the `calc` output, rerun `svg_quality_checker.py`, then repeat the coordinate review. The tool intentionally does not rewrite SVG files automatically.
+
+### Analyze (inspect existing SVG)
+
+```bash
+python3 scripts/svg_position_calculator.py analyze <svg_file>
+```
+
+Use this after SVG generation to inspect existing SVG geometry when manual comparison needs more context.
+
+## Advanced Standalone Tools
+
+### `flatten_tspan.py`
+
+```bash
+python3 scripts/svg_finalize/flatten_tspan.py examples/<project>/svg_output
+python3 scripts/svg_finalize/flatten_tspan.py path/to/input.svg path/to/output.svg
+```
+
+### `svg_rect_to_path.py`
+
+```bash
+python3 scripts/svg_finalize/svg_rect_to_path.py <project_path>
+python3 scripts/svg_finalize/svg_rect_to_path.py <project_path> -s final
+python3 scripts/svg_finalize/svg_rect_to_path.py path/to/file.svg
+```
+
+Use when rounded corners must survive PowerPoint shape conversion.
+
+### `fix_image_aspect.py`
+
+```bash
+python3 scripts/svg_finalize/fix_image_aspect.py path/to/slide.svg
+python3 scripts/svg_finalize/fix_image_aspect.py 01_cover.svg 02_toc.svg
+python3 scripts/svg_finalize/fix_image_aspect.py --dry-run path/to/slide.svg
+```
+
+Use when embedded images stretch after PowerPoint shape conversion.
+
+### `embed_icons.py`
+
+```bash
+python3 scripts/svg_finalize/embed_icons.py output.svg
+python3 scripts/svg_finalize/embed_icons.py svg_output/*.svg
+python3 scripts/svg_finalize/embed_icons.py --dry-run svg_output/*.svg
+```
+
+Replaces `<use data-icon="chunk-filled/name" .../>`, `<use data-icon="tabler-filled/name" .../>` and `<use data-icon="tabler-outline/name" .../>` placeholders with actual SVG path elements. Use for manual icon embedding checks outside `finalize_svg.py`.
+
+## PPT Compatibility Rules
+
+Use PowerPoint-safe transparency syntax:
+
+| Avoid | Use instead |
+|------|-------------|
+| `fill=\"rgba(...)\"` | `fill=\"#hex\"` + `fill-opacity` |
+| `<g opacity=\"...\">` | Set opacity on each child |
+| `<image opacity=\"...\">` | Overlay with a mask layer |
+
+PowerPoint also has trouble with:
+- marker-based arrows
+- unsupported filters
+- direct SVG features not mapped to DrawingML

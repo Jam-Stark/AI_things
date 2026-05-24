@@ -1,0 +1,4 @@
+interface:
+  display_name: "PDF2ZH Paper Translator"
+  short_description: "Find/download papers and translate PDFs"
+  default_prompt: "Use $pdf2zh-paper-translator to find or download a paper by name and translate it to Chinese on my Desktop."
