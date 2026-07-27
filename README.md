@@ -7,8 +7,10 @@
 - `skills/pdf`: PDF 读取、生成与渲染验证工作流，强调用 Poppler/PNG 预览检查版式。
 - `skills/pdf2zh-paper-translator`: 从本地 Papers/Zotero/ZotMoov 或合法开放来源解析论文 PDF，并通过 pdf2zh + Gemini 翻译为中英双语/中文 PDF。
 - `skills/ppt-master`: 多格式资料到 SVG 页面再到 PPTX 的演示文稿生成流水线，包含模板、图表和图片生成辅助脚本。
+- `skills/revise-paper`: 系统修订 Overleaf/多文件 LaTeX 论文，覆盖结构、语言、公式、图表、BibTeX、匿名化和投稿前检查。
 - `skills/rl-command-manager`: 管理 RL train/play 命令批次，生成 play 命令并做差异分析。
 - `skills/roo-qdrant-search`: 从 Codex 查询 Roo Code 写入 Qdrant 的语义代码索引。
+- `skills/tensor-formula-viz`: 为张量、矩阵、向量公式或代码路径生成形状与计算语义严格对齐的可视化。
 - `skills/zotero-zotmoov`: 记录 Zotero Desktop + ZotMoov 的本地导入、附件移动和验证流程。
 
 ## 使用方式
@@ -22,6 +24,8 @@ ln -s ~/workspace/AI_things/skills/roo-qdrant-search ~/.codex/skills/roo-qdrant-
 ln -s ~/workspace/AI_things/skills/pdf ~/.codex/skills/pdf
 ln -s ~/workspace/AI_things/skills/pdf2zh-paper-translator ~/.codex/skills/pdf2zh-paper-translator
 ln -s ~/workspace/AI_things/skills/ppt-master ~/.codex/skills/ppt-master
+ln -s ~/workspace/AI_things/skills/revise-paper ~/.codex/skills/revise-paper
+ln -s ~/workspace/AI_things/skills/tensor-formula-viz ~/.codex/skills/tensor-formula-viz
 ln -s ~/workspace/AI_things/skills/zotero-zotmoov ~/.codex/skills/zotero-zotmoov
 ```
 
@@ -56,4 +60,6 @@ git push
 - 导入其他设备上的 skill 前，先检查是否包含硬编码密钥或本机专用路径。
 - `pdf2zh-paper-translator` 需要 `GEMINI_API_KEY`，可通过 macOS Keychain、环境变量或本机 `~/.config/pdf2zh-paper-translator/env` 提供；本地论文库路径用 `PAPERS_DIR` 配置，输出目录可用 `DESKTOP_DIR` 配置。
 - `ppt-master` 的图片生成后端通过 `IMAGE_BACKEND` 和各服务商的环境变量配置，例如 `GEMINI_API_KEY`、`OPENAI_API_KEY`、`QWEN_API_KEY`、`ZHIPU_API_KEY` 等；不要把实际密钥写入仓库。
+- `revise-paper` 来源于 `CISLab-HKUST/revise-paper`，采用 CC BY-NC-SA 4.0；使用时需要完整 LaTeX 工程，并建议安装 `latexmk` 与 PDF 页面渲染工具。
+- `tensor-formula-viz` 来源于 `wdkns/wdkns-skills` 的 `skills/tensor-formula-viz`；默认使用可编辑 TikZ，中文图建议使用 XeLaTeX 和 Fandol 字体集。
 - `zotero-zotmoov` 的设备路径通过 `ZOTERO_DATA_DIR`、`ZOTERO_PROFILE_DIR`、`ZOTERO_DB` 和 `PAPERS_DIR` 配置。
