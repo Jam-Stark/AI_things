@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jam Coding Role"
+  short_description: "Bootstrap and evolve a lean project AI workflow"
+  default_prompt: "Bootstrap or audit this project's coding role, Codex/OMO workflow, memory, multi-agent routing, and verification discipline."
