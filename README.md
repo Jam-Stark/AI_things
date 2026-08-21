@@ -1,9 +1,10 @@
 # AI_things
 
-这个仓库用于集中管理多台设备上可复用的 AI 相关配置、Codex skills 和辅助脚本。
+这个仓库用于集中管理多台设备上可复用的 AI 相关配置、Codex skills、Coding Roles 和辅助脚本。
 
 当前主要内容：
 
+- `skills/jam-coding-role`: 个人通用 Coding Role 与项目 AI workflow bootstrap，覆盖精简行为准则、Codex/OMO adapter、多 agent、file-based memory、evidence discipline、科学/机器人项目扩展和渐进式成长。
 - `skills/pdf`: PDF 读取、生成与渲染验证工作流，强调用 Poppler/PNG 预览检查版式。
 - `skills/pdf2zh-paper-translator`: 从本地 Papers/Zotero/ZotMoov 或合法开放来源解析论文 PDF，并通过 pdf2zh + Gemini 翻译为中英双语/中文 PDF。
 - `skills/ppt-master`: 多格式资料到 SVG 页面再到 PPTX 的演示文稿生成流水线，包含模板、图表和图片生成辅助脚本。
@@ -19,6 +20,7 @@
 
 ```bash
 git clone git@github.com:Jam-Stark/AI_things.git ~/workspace/AI_things
+ln -s ~/workspace/AI_things/skills/jam-coding-role ~/.codex/skills/jam-coding-role
 ln -s ~/workspace/AI_things/skills/rl-command-manager ~/.codex/skills/rl-command-manager
 ln -s ~/workspace/AI_things/skills/roo-qdrant-search ~/.codex/skills/roo-qdrant-search
 ln -s ~/workspace/AI_things/skills/pdf ~/.codex/skills/pdf
@@ -30,6 +32,37 @@ ln -s ~/workspace/AI_things/skills/zotero-zotmoov ~/.codex/skills/zotero-zotmoov
 ```
 
 如果目标路径已经存在，可以先确认是否需要备份或合并，再替换为软链接。
+
+## 新项目 AI workflow bootstrap
+
+最小通用项目：
+
+```bash
+python ~/workspace/AI_things/skills/jam-coding-role/scripts/bootstrap.py init \
+  /path/to/new-project
+```
+
+Codex + OMO 的 ML/RL、simulation 或 robotics 项目：
+
+```bash
+python ~/workspace/AI_things/skills/jam-coding-role/scripts/bootstrap.py init \
+  /path/to/new-project \
+  --profile scientific \
+  --runtime codex \
+  --runtime omo
+```
+
+然后从真实 code/config 填写项目内 `.ai/PROJECT.md`，再运行：
+
+```bash
+python ~/workspace/AI_things/skills/jam-coding-role/scripts/bootstrap.py audit \
+  /path/to/new-project \
+  --profile scientific \
+  --runtime codex \
+  --runtime omo
+```
+
+`init` 不覆盖现有文件；`refresh` 只更新带 managed marker 的通用 core，不覆盖 project overlay、memory、root entrypoint 或 runtime adapter。成熟项目迁移前先阅读 `skills/jam-coding-role/examples/` 中的对应方案。
 
 ## 多设备同步流程
 
@@ -58,6 +91,7 @@ git push
 - 需要密钥的 skill 应通过环境变量读取，例如 `OPENROUTER_API_KEY` 或 `ROO_INDEX_EMBED_API_KEY`。
 - 设备差异配置建议放在本机环境变量、未跟踪的 `.env` 文件或单独的 local 配置里。
 - 导入其他设备上的 skill 前，先检查是否包含硬编码密钥或本机专用路径。
+- `jam-coding-role` 的 universal core 受 Karpathy-inspired guidelines 启发，但项目必须复制并 pin 版本，runtime/model/tool 细节留在项目配置中，避免全局更新导致所有 repo 同时漂移。
 - `pdf2zh-paper-translator` 需要 `GEMINI_API_KEY`，可通过 macOS Keychain、环境变量或本机 `~/.config/pdf2zh-paper-translator/env` 提供；本地论文库路径用 `PAPERS_DIR` 配置，输出目录可用 `DESKTOP_DIR` 配置。
 - `ppt-master` 的图片生成后端通过 `IMAGE_BACKEND` 和各服务商的环境变量配置，例如 `GEMINI_API_KEY`、`OPENAI_API_KEY`、`QWEN_API_KEY`、`ZHIPU_API_KEY` 等；不要把实际密钥写入仓库。
 - `revise-paper` 来源于 `CISLab-HKUST/revise-paper`，采用 CC BY-NC-SA 4.0；使用时需要完整 LaTeX 工程，并建议安装 `latexmk` 与 PDF 页面渲染工具。
