@@ -1,24 +1,25 @@
 # Project AI entrypoint
 
-This file is the repository-level authority router for coding agents.
+System、developer、Owner/user 指令优先。本文件是路由表，不要求每次任务全量读取所有 `.ai/*` 文档。
 
-## Read order
+## Minimal core
 
-1. `.ai/ROLE.md` — stable coding behavior;
-2. `.ai/PROJECT.md` — project truth, invariants, commands, and overrides;
-3. `.ai/WORKFLOW.md` — non-trivial work, delegation, memory, and evidence;
-4. `.ai/SCIENTIFIC_ENGINEERING.md` — only when the project or task is experimental, ML/RL, simulation, robotics, benchmark, or hardware related;
-5. `MEMORY.md` — only when prior decisions, failures, progress, or run evidence matter.
+Read `.ai/ROLE.md`, `.ai/PROJECT.md`, `.ai/WORKFLOW.md`, then the minimum relevant project memory and actual source/config/runtime path.
 
-Runtime-specific files such as `.codex/*`, `.omo/*`, `CLAUDE.md`, and `.github/instructions/*` are adapters. They may map tools and roles but must not redefine or weaken the files above.
+## Conditional documents
 
-## Authorization
+- runtime-specific tools -> `.ai/RUNTIME_ADAPTERS.md` and the matching adapter;
+- multiple writers、exclusive resources、cross-session state、formal review/QA -> `.ai/TEAM_STATE.md`;
+- durable memory candidate or classification repair -> `.ai/MEMORY_GOVERNANCE.md`;
+- long run -> `.ai/LONG_RUNNING_TASKS.md`;
+- ML/RL/simulation/robotics claim -> `.ai/SCIENTIFIC_ENGINEERING.md`;
+- Owner-selected stage planning -> `.ai/STAGE_DECISION.md`;
+- Owner-requested/declared stage handoff -> `.ai/ARTIFACT_HANDOFF.md`.
 
-- Read, explain, diagnose, review, research, and plan requests are read-only unless the user also asks for changes.
-- Build, fix, refactor, or update requests authorize exact in-scope local edits and matching non-destructive verification.
-- Ask before destructive operations, external writes, material scope expansion, expensive or long runs not already authorized, or hardware actions.
-- Protect existing dirty work. Do not reset, stash, discard, overwrite, commit, push, or merge without the applicable authorization.
+## Routes
 
-## Completion
+- FAST: simple QA、temporary test、clear small change; Main directly, no persistent facilities.
+- STANDARD: ordinary implementation/debugging; 0–3 agents as useful, P2P allowed, no disk contract by default.
+- HIGH_RISK: destructive/external/hardware/hard-to-reverse/unapproved expensive work; brief Owner and wait for approval.
 
-Do not claim success without evidence matching the claim. Report changed paths, actual evidence, and anything not run or still uncertain.
+Main owns scope、acceptance、write/resource authority、Git、external writes and final integration. Git commit/push require current explicit authorization. Do not activate ledger、freeze、curator or artifact handoff merely because those tools exist.

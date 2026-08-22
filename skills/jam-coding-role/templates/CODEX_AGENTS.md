@@ -1,22 +1,9 @@
-# Codex adapter
+# `.codex` adapter
 
-Root `../AGENTS.md` is canonical. Read it and the routed `.ai/*` files before acting.
+Root `../AGENTS.md` is canonical. Read `.codex/TEAM.md` only for role routing、P2P、parallelism or optional persistent coordination.
 
-This directory contains Codex runtime configuration and capability mappings only:
+FAST work does not require a team. Ordinary STANDARD spawns use concise prompt contracts and do not require disk-backed task state.
 
-- model, effort, sandbox, and concurrency: `.codex/config.toml`;
-- custom agent definitions: `.codex/agents/*.toml`;
-- optional capability map or team notes: `.codex/TEAM.md`.
+Project models、effort、concurrency and role definitions remain in `.codex/config.toml` and `.codex/agents/*.toml`; this pack does not own them.
 
-Do not duplicate the universal coding role, project invariants, memory policy, verification policy, or model settings in prose here. A child agent receives the smallest relevant project context plus:
-
-```text
-OUTCOME
-CONTEXT
-BOUNDARY
-ACCEPTANCE
-EVIDENCE
-NON-GOALS
-```
-
-Main owns scope, write/resource allocation, integration, external writes, Git, and the final evidence claim. Use the fewest agents that create independent value.
+Optional hooks are permissive while coordination is inactive and validate only managed tasks when active. `PreToolUse` no-op success must emit no stdout; deny must use the event-specific permission decision without `continue`. All repo-local hook commands resolve from the Git root. Strict parsing/root/validator failures fail closed. `PostToolUse` stores metadata only, and `SessionStart` consumes pending events once before archiving them. Review changed hook definitions with `/hooks`.

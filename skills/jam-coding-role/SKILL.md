@@ -1,87 +1,81 @@
 ---
 name: jam-coding-role
-description: Bootstrap, audit, or evolve a lean project AI coding role and workflow. Use for new repositories, Codex/OMO integration, multi-agent routing, file-based memory, scientific/robotics evidence discipline, or simplifying duplicated agent instructions.
+description: Bootstrap, migrate, audit, or evolve a lean project AI coding role. Use for project-level Codex/OpenCode/OMO/Claude routing, optional multi-agent coordination, file-based memory, long-running scientific work, or artifact handoff.
 ---
 
-# Jam Coding Role
+# Jam Coding Role v1.3.0
 
-Use this skill when the user asks to create, migrate, audit, or improve project-level AI behavior and workflow.
+This skill provides a portable behavior kernel with **lean defaults and on-demand control facilities**.
 
-The pack is intentionally layered:
+## Core design
 
-- `references/ROLE.md`: stable universal coding behavior;
-- `references/WORKFLOW.md`: adaptive execution, multi-agent, memory, evidence, and adapter rules;
-- `references/SCIENTIFIC_ENGINEERING.md`: optional ML/RL/simulation/robotics extension;
-- `references/PROJECT_GROWTH.md`: trigger-based workflow growth;
-- `templates/`: thin project entrypoint, project overlay, memory router, and runtime adapters;
-- `scripts/bootstrap.py`: safe init/refresh/audit helper;
-- `examples/DoorDog-A2_Piper-migration.md`: concrete migration from a mature Codex/OMO robotics project.
+- FAST / STANDARD / HIGH_RISK route selection;
+- no mandatory team, ledger, disk contract, reviewer wave, memory curator, or artifact step for ordinary work;
+- Codex MultiAgentV2 P2P remains available without persistent coordination state;
+- ledger, lease, candidate freeze and verdict dependency activate only for real multi-writer/resource/cross-session/formal-review needs;
+- memory governance is proactive but candidate-triggered;
+- long-run and artifact workflows are explicit optional profiles;
+- standalone Claude Code remains single-agent;
+- OpenCode/OMO preserves its own official ordinary delegation and Team Mode semantics.
 
-## Operating procedure
+## Files
 
-1. **Inspect before installing**
-   - Read current root instructions, runtime adapters/configs, memory routes, and actual code entrypoints.
-   - Identify duplicated rules, stale paths, contradictory settings, and project-specific facts mixed into universal policy.
+- `references/ROLE.md`: stable coding behavior and Chinese expression standard;
+- `references/WORKFLOW.md`: FAST / STANDARD / HIGH_RISK and facility triggers;
+- `references/RUNTIME_ADAPTERS.md`: Codex, OpenCode/OMO and standalone Claude routing;
+- `references/TEAM_STATE.md`: optional coordination ledger;
+- `references/MEMORY_GOVERNANCE.md`: active, candidate-triggered memory maintenance;
+- `references/LONG_RUNNING_TASKS.md`: tmux receipts and pending events;
+- `references/SCIENTIFIC_ENGINEERING.md`: optional ML/RL/simulation/robotics evidence discipline;
+- `references/STAGE_DECISION.md`: optional Owner-directed local/cloud planning synthesis;
+- `references/ARTIFACT_HANDOFF.md`: explicit stage artifact packaging, 95 MiB semantic ZIP splitting and Drive handoff;
+- `references/PROJECT_GROWTH.md`: grow only after observed workflow failure;
+- `scripts/bootstrap.py`: safe init/refresh/audit;
+- optional helpers under `scripts/`.
 
-2. **Choose the lowest maturity level**
-   - Start from `references/PROJECT_GROWTH.md`.
-   - Do not install team, memory, scientific, or release ceremony without a concrete trigger.
+## Codex hook contract
 
-3. **Create one canonical hierarchy**
-   - universal behavior -> `.ai/ROLE.md`;
-   - project truth and overrides -> `.ai/PROJECT.md`;
-   - workflow, team, memory, and evidence -> `.ai/WORKFLOW.md`;
-   - optional research rules -> `.ai/SCIENTIFIC_ENGINEERING.md`;
-   - root `AGENTS.md` and runtime files remain thin routers/adapters.
+When coordination hooks are installed:
 
-4. **Preserve project value**
-   - Keep proven project-specific memory, commands, safety rules, role configs, and artifact contracts.
-   - Remove only duplication, stale references, conflicting authority, and ceremony that no longer changes decisions.
+- `PreToolUse` no-op success exits `0` without stdout; deny uses only the event-specific permission decision and never returns `continue`;
+- `PostToolUse` and `SessionStart` may use their supported common output fields;
+- repository-local commands resolve scripts from `$(git rev-parse --show-toplevel)`;
+- malformed strict-policy input fails closed;
+- PostToolUse persistence is metadata-only, and pending SessionStart events are delivered once then archived.
 
-5. **Define acceptance before migration**
-   - every supported runtime reaches the same canonical policy;
-   - no adapter refers to deleted files or obsolete gates;
-   - model, effort, concurrency, and tool settings have one config source;
-   - project-specific invariants are retained;
-   - existing files are not overwritten silently.
+The implementation details and verification evidence are recorded in `UPDATE_LOG.md`.
 
-6. **Verify at the matching level**
-   - inspect paths and references;
-   - parse relevant config;
-   - run the smallest runtime discovery or smoke needed by the migration;
-   - do not claim agent spawning or workflow behavior from static files alone.
+## Bootstrap
 
-## Bootstrap commands
+Minimal project:
 
-From this skill directory:
+```bash
+python scripts/bootstrap.py init /path/to/project
+```
+
+Scientific project with runtime adapters but without persistent coordination:
 
 ```bash
 python scripts/bootstrap.py init /path/to/project \
   --profile scientific \
   --runtime codex \
-  --runtime omo
+  --runtime omo \
+  --runtime claude
 ```
 
-Add `--runtime claude` when the project also needs a thin `CLAUDE.md` adapter.
-
-Audit a project:
+Add facilities only when needed:
 
 ```bash
-python scripts/bootstrap.py audit /path/to/project \
-  --profile scientific \
-  --runtime codex \
-  --runtime omo
+  --memory
+  --codex-coordination-state \
+  --long-run-supervisor \
+  --stage-workflow \
+  --artifact-sync \
+  --omo-team-mode
 ```
 
-Refresh only managed upstream core files:
+`init` never overwrites existing files. `refresh` updates only managed core files. Project entrypoints, runtime configuration, memory, credentials and local overlays remain project-owned.
 
-```bash
-python scripts/bootstrap.py refresh /path/to/project \
-  --profile scientific
-```
+## Migration principle
 
-`init` never overwrites existing files. `refresh` only replaces files marked as managed by this pack; it does not overwrite `AGENTS.md`, `.ai/PROJECT.md`, `MEMORY.md`, or runtime adapters.
-
-## Attribution
-
-The concise core is inspired by the four ideas in [`multica-ai/andrej-karpathy-skills`](https://github.com/multica-ai/andrej-karpathy-skills): surface assumptions, prefer the simplest sufficient solution, make surgical changes, and work toward explicit verifiable goals. This pack is an independent project-oriented adaptation that adds runtime adapters, adaptive multi-agent coordination, file-based memory, evidence levels, and scientific/robotics discipline.
+A migration script must not stage or commit by default. Git writes require current explicit Owner authorization and must be surfaced as opt-in flags. External upload is also explicit; never hide it in a session-end hook.

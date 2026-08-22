@@ -1,7 +1,7 @@
 <!-- managed-by: jam-coding-role; file: SCIENTIFIC_ENGINEERING.md -->
 # Scientific Software and Robotics Extension
 
-本文件用于 ML/RL、simulation、robotics、benchmark、causal probe 和长时实验。它扩展 `ROLE.md`，不替代项目安全手册。
+本文件用于 ML/RL、simulation、robotics、benchmark、causal probe 和长时实验。它扩展 `ROLE.md`，不替代项目安全手册。跨阶段方案可按需读取 `.ai/STAGE_DECISION.md`，阶段产出交接可按需读取 `.ai/ARTIFACT_HANDOFF.md`。
 
 ## 1. 先注册问题，不先注册答案
 

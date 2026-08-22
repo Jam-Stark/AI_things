@@ -1,18 +1,18 @@
 # AI_things
 
-这个仓库用于集中管理多台设备上可复用的 AI 相关配置、Codex skills、Coding Roles 和辅助脚本。
+这个仓库用于集中管理多台设备上可复用的 AI 配置、Codex skills、Coding Roles 和辅助脚本。
 
 当前主要内容：
 
-- `skills/jam-coding-role`: 个人通用 Coding Role 与项目 AI workflow bootstrap，覆盖精简行为准则、Codex/OMO adapter、多 agent、file-based memory、evidence discipline、科学/机器人项目扩展和渐进式成长。
-- `skills/pdf`: PDF 读取、生成与渲染验证工作流，强调用 Poppler/PNG 预览检查版式。
-- `skills/pdf2zh-paper-translator`: 从本地 Papers/Zotero/ZotMoov 或合法开放来源解析论文 PDF，并通过 pdf2zh + Gemini 翻译为中英双语/中文 PDF。
-- `skills/ppt-master`: 多格式资料到 SVG 页面再到 PPTX 的演示文稿生成流水线，包含模板、图表和图片生成辅助脚本。
-- `skills/revise-paper`: 系统修订 Overleaf/多文件 LaTeX 论文，覆盖结构、语言、公式、图表、BibTeX、匿名化和投稿前检查。
-- `skills/rl-command-manager`: 管理 RL train/play 命令批次，生成 play 命令并做差异分析。
-- `skills/roo-qdrant-search`: 从 Codex 查询 Roo Code 写入 Qdrant 的语义代码索引。
-- `skills/tensor-formula-viz`: 为张量、矩阵、向量公式或代码路径生成形状与计算语义严格对齐的可视化。
-- `skills/zotero-zotmoov`: 记录 Zotero Desktop + ZotMoov 的本地导入、附件移动和验证流程。
+- `skills/jam-coding-role`：个人通用 Coding Role 与项目 AI workflow bootstrap。当前发布版本为 **v1.3.0**，采用 FAST / STANDARD / HIGH_RISK 分层路由，保留 Codex P2P、主动 memory governance、长任务连续性和 artifact handoff，但只在真实触发条件下启用 ledger、lease、freeze 等控制设施。
+- `skills/pdf`：PDF 读取、生成与渲染验证工作流，强调用 Poppler/PNG 预览检查版式。
+- `skills/pdf2zh-paper-translator`：从本地 Papers/Zotero/ZotMoov 或合法开放来源解析论文 PDF，并通过 pdf2zh + Gemini 翻译为中英双语/中文 PDF。
+- `skills/ppt-master`：多格式资料到 SVG 页面再到 PPTX 的演示文稿生成流水线，包含模板、图表和图片生成辅助脚本。
+- `skills/revise-paper`：系统修订 Overleaf/多文件 LaTeX 论文，覆盖结构、语言、公式、图表、BibTeX、匿名化和投稿前检查。
+- `skills/rl-command-manager`：管理 RL train/play 命令批次，生成 play 命令并做差异分析。
+- `skills/roo-qdrant-search`：从 Codex 查询 Roo Code 写入 Qdrant 的语义代码索引。
+- `skills/tensor-formula-viz`：为张量、矩阵、向量公式或代码路径生成形状与计算语义严格对齐的可视化。
+- `skills/zotero-zotmoov`：记录 Zotero Desktop + ZotMoov 的本地导入、附件移动和验证流程。
 
 ## 使用方式
 
@@ -31,7 +31,7 @@ ln -s ~/workspace/AI_things/skills/tensor-formula-viz ~/.codex/skills/tensor-for
 ln -s ~/workspace/AI_things/skills/zotero-zotmoov ~/.codex/skills/zotero-zotmoov
 ```
 
-如果目标路径已经存在，可以先确认是否需要备份或合并，再替换为软链接。
+如果目标路径已经存在，先确认是否需要备份或合并，再替换为软链接。
 
 ## 新项目 AI workflow bootstrap
 
@@ -42,27 +42,60 @@ python ~/workspace/AI_things/skills/jam-coding-role/scripts/bootstrap.py init \
   /path/to/new-project
 ```
 
-Codex + OMO 的 ML/RL、simulation 或 robotics 项目：
+Codex + OMO + standalone Claude 的 ML/RL、simulation 或 robotics 项目，可以先只安装运行时路由：
 
 ```bash
 python ~/workspace/AI_things/skills/jam-coding-role/scripts/bootstrap.py init \
   /path/to/new-project \
   --profile scientific \
   --runtime codex \
-  --runtime omo
+  --runtime omo \
+  --runtime claude
 ```
 
-然后从真实 code/config 填写项目内 `.ai/PROJECT.md`，再运行：
+只有真实需要时再增加设施：
+
+```bash
+  --memory \
+  --codex-coordination-state \
+  --long-run-supervisor \
+  --stage-workflow \
+  --artifact-sync \
+  --omo-team-mode
+```
+
+然后从真实 code/config 填写项目内 `.ai/PROJECT.md`，并使用相同参数运行：
 
 ```bash
 python ~/workspace/AI_things/skills/jam-coding-role/scripts/bootstrap.py audit \
   /path/to/new-project \
   --profile scientific \
   --runtime codex \
-  --runtime omo
+  --runtime omo \
+  --runtime claude
 ```
 
 `init` 不覆盖现有文件；`refresh` 只更新带 managed marker 的通用 core，不覆盖 project overlay、memory、root entrypoint 或 runtime adapter。成熟项目迁移前先阅读 `skills/jam-coding-role/examples/` 中的对应方案。
+
+## Jam Coding Role v1.3.0 更新重点
+
+- 普通 QA、临时实现和明确小改动继续走轻量 FAST / STANDARD 路径；
+- persistent team ledger、disk contract、lease 和 candidate freeze 只按需启用；
+- Codex `PreToolUse` 使用事件专用输出：无事放行时不输出内容，拒绝时只返回支持的 permission decision；
+- 所有仓库内 hook 通过 Git 根目录定位脚本，允许 Codex 从任意子目录启动；
+- strict hook 输入或 Git-root 解析错误 fail closed；
+- `PostToolUse` 只记录协调 metadata；`SessionStart` pending event 只投递一次后归档；
+- `Pro_Space` artifact 单 ZIP 默认上限为 95 MiB，超限时按语义生成可独立打开的标准 ZIP，并附 `BUNDLE_INDEX.md`；不生成 `.z01/.z02` 分卷，也不把超大 checkpoint 硬切成无效碎片。
+
+详细内容见：
+
+```text
+skills/jam-coding-role/UPDATE_LOG.md
+skills/jam-coding-role/CHANGELOG.md
+skills/jam-coding-role/VERIFICATION.md
+```
+
+安装或修改项目级 Codex hooks 后，应在 Codex 中用 `/hooks` 检查并信任当前精确定义。
 
 ## 多设备同步流程
 
