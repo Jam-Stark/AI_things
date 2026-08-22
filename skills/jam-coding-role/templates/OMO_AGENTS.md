@@ -1,20 +1,9 @@
 # OpenCode / OMO adapter
 
-Root `../AGENTS.md` is canonical. Read it and the routed `.ai/*` files before acting.
+Root `AGENTS.md` and core `.ai` files are canonical.
 
-Use OMO categories, `task()`, team tools, skills, and model selection only as runtime mappings for the capabilities in `.ai/WORKFLOW.md`. Do not restate or fork the universal role, project invariants, memory rules, verification rules, or approval policy here.
+FAST uses lead direct work or `quick`. STANDARD uses ordinary goal-based delegation and specialists as needed. OMO Team Mode is optional and not required for simple QA、temporary tests or one writer.
 
-Fresh delegated sessions receive:
+Enable Team Mode only for a real shared task graph、multiple writers or persistent member communication. Preserve official member eligibility、shared task list、mailbox and shutdown lifecycle. Keep ineligible specialists on official `task()`/`call_omo_agent()` routes.
 
-```text
-OUTCOME
-CONTEXT
-BOUNDARY
-ACCEPTANCE
-EVIDENCE
-NON-GOALS
-```
-
-Use direct or quick execution for bounded work. Use research, builder, runner, verifier/reviewer, or curator capabilities only when their spawn conditions are met. Team mode is for genuinely independent work or exclusive-resource coordination, not a mandatory pipeline.
-
-Lead owns scope, write/resource allocation, integration, external writes, Git, and the final evidence claim.
+Lead owns scope、resources、Git、external writes and final verification.

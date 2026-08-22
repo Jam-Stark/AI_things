@@ -1,0 +1,6 @@
+{
+  "disableAgentView": true,
+  "permissions": {
+    "deny": ["Agent"]
+  }
+}
