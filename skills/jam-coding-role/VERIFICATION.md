@@ -1,6 +1,24 @@
-# Jam Coding Role v1.3.0 — Verification
+# Jam Coding Role v1.3.1 — Verification
 
-## Completed against the repository implementation
+## v1.3.1 delta
+
+```text
+Prompt generated from pushed branch/commit                 PASS
+Repository URL、branch、full SHA and ZIP names present      PASS
+Review type and Owner request auto-fill                     PASS
+Missing review type leaves explicit Owner placeholder       PASS
+Tracked dirty state rejected                                PASS
+Local commit not present on remote-tracking branch rejected PASS
+Compressed ZIP larger than 95 MiB rejected                  PASS
+AGENTS automatic delegation project instruction present     PASS
+PROJECT command registry present                            PASS
+ARTIFACT_HANDOFF says compressed size, not raw size         PASS
+Python syntax compilation                                   PASS
+```
+
+The v1.3.1 comparison did not modify v1.3.0 Codex hooks、team-state、memory、long-run、OMO、Claude or semantic ZIP implementation.
+
+## Preserved v1.3.0 repository verification
 
 ```text
 Python syntax compilation                               PASS

@@ -1,3 +1,60 @@
+# Jam Coding Role v1.3.1 — Update Log
+
+**Target branch:** `release/jam-coding-role-v1.3.0`  
+**Update type:** minimal backward-compatible project-workflow delta
+
+## 1. Route authority
+
+The new Codex request default observed in production says not to proactively create sub-agents unless the user or project explicitly requires delegation、parallel work or a team. v1.3.1 does not attempt to outrank system/developer instructions. Instead, root `AGENTS.md` now explicitly serves as the repository workflow instruction that:
+
+- automatically classifies every request as FAST、STANDARD or HIGH_RISK;
+- requires useful delegation in STANDARD/HIGH_RISK when independent workstreams、specialist context or independent review justify it;
+- permits zero agents when delegation adds no value;
+- falls back to single-agent execution when a higher-level instruction explicitly makes sub-agents off-limits.
+
+This restores automatic routing without falsely claiming that a repository file can override system/developer policy.
+
+## 2. Cloud Pro review handoff
+
+A cloud Pro reviewer can only inspect the remote repository state. Therefore an Owner-requested cloud review now requires this order:
+
+```text
+inspect diff -> commit in-scope Git changes -> push configured branch
+-> verify remote commit == local HEAD -> pack/upload artifacts
+-> generate PRO_REVIEW_PROMPT.md
+```
+
+The generated prompt includes repository URL、branch、full commit SHA、Drive release and ZIP names. It tells the cloud reviewer to think independently while respecting its lack of access to the local production environment, avoiding over-strict scientific gates and leaving local AI discretion over production feasibility. Review type is auto-filled when supplied; otherwise an explicit Owner placeholder remains.
+
+## 3. Compressed ZIP wording
+
+The 95 MiB boundary is the actual compressed file size of each generated `.zip`. It is not a limit on raw source/log/checkpoint input size. Existing semantic independent-ZIP splitting and oversized-checkpoint rules remain unchanged.
+
+## 4. Project command registry
+
+`.ai/PROJECT.md` now initializes canonical runtime/conda environments and exact train、eval and smoke commands, including CWD、environment ID、expected artifact、last verified date and evidence. Agents use verified commands first, mark stale entries before replacement, and update the same row after successful verification instead of accumulating near-duplicate commands.
+
+## 5. Minimal-diff check
+
+v1.3.1 intentionally does not alter Codex hook/P2P semantics、team-state/lease/freeze triggers、memory governance、long-run behavior、OMO Team Mode、Claude single-agent routing、semantic ZIP implementation、Pro_Space target or migration Git defaults.
+
+Changed scope is limited to route authority、workflow wording、project command registry、cloud-review handoff documentation/config、one prompt helper/template、tests and version logs.
+
+## 6. v1.3.1 verification
+
+```text
+pro_review_handoff unit tests                         PASS
+published branch/commit prompt fields                 PASS
+missing review type preserves Owner placeholder       PASS
+unpushed local commit rejected                        PASS
+compressed ZIP >95 MiB rejected                       PASS
+AGENTS automatic route marker                         PASS
+PROJECT command registry marker                       PASS
+Python compilation                                    PASS
+```
+
+---
+
 # Jam Coding Role v1.3.0 — Repository Update Log
 
 **Update date:** 2026-08-23  

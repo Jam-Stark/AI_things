@@ -1,0 +1,107 @@
+from __future__ import annotations
+
+import subprocess
+import sys
+import tempfile
+import unittest
+import zipfile
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPT = ROOT / "scripts" / "pro_review_handoff.py"
+TEMPLATE = ROOT / "templates" / "PRO_REVIEW_PROMPT.md"
+
+
+class V131Tests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temp = tempfile.TemporaryDirectory()
+        self.base = Path(self.temp.name)
+        self.remote = self.base / "remote.git"
+        self.repo = self.base / "repo"
+        subprocess.run(["git", "init", "--bare", "-q", str(self.remote)], check=True)
+        subprocess.run(["git", "init", "-q", str(self.repo)], check=True)
+        subprocess.run(["git", "config", "user.name", "Test"], cwd=self.repo, check=True)
+        subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=self.repo, check=True)
+        subprocess.run(["git", "remote", "add", "origin", str(self.remote)], cwd=self.repo, check=True)
+        (self.repo / "README.md").write_text("test\n", encoding="utf-8")
+        subprocess.run(["git", "add", "README.md"], cwd=self.repo, check=True)
+        subprocess.run(["git", "commit", "-qm", "init"], cwd=self.repo, check=True)
+        subprocess.run(["git", "branch", "-M", "review"], cwd=self.repo, check=True)
+        subprocess.run(["git", "push", "-qu", "origin", "review"], cwd=self.repo, check=True)
+        self.release = self.base / "release"
+        self.release.mkdir()
+        with zipfile.ZipFile(self.release / "logs_and_metrics.zip", "w") as archive:
+            archive.writestr("metrics.json", "{}")
+
+    def tearDown(self) -> None:
+        self.temp.cleanup()
+
+    def run_helper(self, *extra: str) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT),
+                "--repo",
+                str(self.repo),
+                "--release-dir",
+                str(self.release),
+                "--drive-location",
+                "Pro_Space/Test/review/stage/release/",
+                "--template",
+                str(TEMPLATE),
+                *extra,
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+    def test_prompt_contains_published_git_and_review_order(self) -> None:
+        result = self.run_helper(
+            "--review-type",
+            "阶段验收",
+            "--owner-request",
+            "核查本轮结果",
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        text = (self.release / "PRO_REVIEW_PROMPT.md").read_text(encoding="utf-8")
+        self.assertIn("Branch: `review`", text)
+        self.assertIn("logs_and_metrics.zip", text)
+        self.assertIn("阶段验收", text)
+        self.assertIn("One more thing", text)
+        self.assertIn("local AI", text)
+
+    def test_missing_review_type_keeps_owner_placeholder(self) -> None:
+        result = self.run_helper()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        text = (self.release / "PRO_REVIEW_PROMPT.md").read_text(encoding="utf-8")
+        self.assertIn("[OWNER:", text)
+
+    def test_unpushed_commit_is_rejected(self) -> None:
+        (self.repo / "README.md").write_text("changed\n", encoding="utf-8")
+        subprocess.run(["git", "add", "README.md"], cwd=self.repo, check=True)
+        subprocess.run(["git", "commit", "-qm", "local only"], cwd=self.repo, check=True)
+        result = self.run_helper()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("not the verified pushed commit", result.stderr)
+
+    def test_limit_is_compressed_zip_file_size(self) -> None:
+        oversized = self.release / "plots_and_evidence.zip"
+        with oversized.open("wb") as handle:
+            handle.truncate(95 * 1024 * 1024 + 1)
+        result = self.run_helper()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("compressed ZIP exceeds 95 MiB", result.stderr)
+
+    def test_templates_declare_automatic_route_and_command_registry(self) -> None:
+        agents = (ROOT / "templates" / "AGENTS.md").read_text(encoding="utf-8")
+        project = (ROOT / "templates" / "PROJECT.md").read_text(encoding="utf-8")
+        handoff = (ROOT / "references" / "ARTIFACT_HANDOFF.md").read_text(encoding="utf-8")
+        self.assertIn("Automatic route selection", agents)
+        self.assertIn("explicitly requires Main to delegate", agents)
+        self.assertIn("Environment and command registry", project)
+        self.assertIn("final compressed size", handoff)
+
+
+if __name__ == "__main__":
+    unittest.main()

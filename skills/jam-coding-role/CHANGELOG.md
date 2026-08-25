@@ -1,3 +1,17 @@
+# Jam Coding Role Changelog
+
+## 1.3.1 — Minimal routing and cloud-review handoff update
+
+- Declared root `AGENTS.md` as the repository's project-level workflow authority, below system/developer/Owner instructions but above runtime defaults and ordinary adapters.
+- Made FAST/STANDARD/HIGH_RISK classification automatic. STANDARD/HIGH_RISK may delegate without waiting for the user to say “team” when independent workstreams、specialist context or independent review justify it; explicit higher-level sub-agent bans still force single-agent fallback.
+- Added a canonical environment and command registry to `.ai/PROJECT.md`, including initial train/eval/smoke placeholders and maintenance rules.
+- Made cloud Pro handoff a Git-published handoff: commit in-scope changes、push、verify remote commit、pack/upload artifacts、then generate the review prompt.
+- Added `PRO_REVIEW_PROMPT.md` and `pro_review_handoff.py` with repository URL、branch、commit、Drive release、ZIP list、review type and Owner request.
+- Explicitly stated that 95 MiB limits the final compressed size of each generated ZIP, not raw input size.
+- Added `UPDATE_GUIDE_1.3.1.md` for existing project installations.
+
+---
+
 # Jam Coding Role v1.3.0 — Adaptive Coordination
 
 > Release lineage: `AI_things/main` previously carried v1.0.0. v1.1.0 and v1.2.0 were reviewed delivery candidates but were not the published repository version. v1.3.0 is the consolidated repository release that incorporates the approved runtime, language, stage-decision, artifact, P2P, team-state, memory and lean-routing changes.
