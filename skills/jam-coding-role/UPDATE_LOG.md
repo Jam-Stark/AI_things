@@ -3,6 +3,19 @@
 **Target branch:** `release/jam-coding-role-v1.3.0`  
 **Update type:** minimal backward-compatible project-workflow delta
 
+## 2026-08-26 Pro full-delivery addendum — version unchanged
+
+Cloud Pro review now produces two synchronized deliverables:
+
+1. a concise five-item conversation response for the Owner;
+2. `pro_delivery__full_review.zip` for the local Worker AI.
+
+The full ZIP contains `FULL_REVIEW.md` and `LOCAL_WORKER_PARSE_PROMPT.md`. Concise item 5 provides the same copy-ready Worker prompt and the exact Drive task-folder/ZIP address. If upload is unavailable, the Pro must report `NOT_UPLOADED` and must not invent a URL.
+
+Worker inputs and the Pro result share one immutable task folder. New Worker ZIPs and sidecars use `worker_delivery__`; the Pro full answer uses `pro_delivery__`. The stage packer now emits the Worker-prefixed names, and the prompt helper lists only Worker ZIPs while remaining backward-compatible with historical unprefixed releases.
+
+This addendum does not change `VERSION`, route authority, Git publish checks, Codex hooks/P2P, team state, memory, long-run, OMO, Claude, 95 MiB compressed-size enforcement, Pro_Space target or migration Git defaults.
+
 ## 1. Route authority
 
 The new Codex request default observed in production says not to proactively create sub-agents unless the user or project explicitly requires delegation、parallel work or a team. v1.3.1 does not attempt to outrank system/developer instructions. Instead, root `AGENTS.md` now explicitly serves as the repository workflow instruction that:
@@ -16,15 +29,16 @@ This restores automatic routing without falsely claiming that a repository file 
 
 ## 2. Cloud Pro review handoff
 
-A cloud Pro reviewer can only inspect the remote repository state. Therefore an Owner-requested cloud review now requires this order:
+A cloud Pro reviewer can only inspect the remote repository state. Therefore an Owner-requested cloud review requires this order:
 
 ```text
 inspect diff -> commit in-scope Git changes -> push configured branch
--> verify remote commit == local HEAD -> pack/upload artifacts
--> generate PRO_REVIEW_PROMPT.md
+-> verify remote commit == local HEAD -> pack/upload Worker artifacts
+-> generate PRO_REVIEW_PROMPT.md -> Pro review
+-> upload pro_delivery__full_review.zip into the same task folder
 ```
 
-The generated prompt includes repository URL、branch、full commit SHA、Drive release and ZIP names. It tells the cloud reviewer to think independently while respecting its lack of access to the local production environment, avoiding over-strict scientific gates and leaving local AI discretion over production feasibility. Review type is auto-filled when supplied; otherwise an explicit Owner placeholder remains.
+The generated prompt includes repository URL、branch、full commit SHA、Drive task folder and Worker ZIP names. It tells the cloud reviewer to think independently while respecting its lack of access to the local production environment, avoiding over-strict scientific gates and leaving local AI discretion over production feasibility. Review type is auto-filled when supplied; otherwise an explicit Owner placeholder remains.
 
 ## 3. Compressed ZIP wording
 
@@ -32,25 +46,27 @@ The 95 MiB boundary is the actual compressed file size of each generated `.zip`.
 
 ## 4. Project command registry
 
-`.ai/PROJECT.md` now initializes canonical runtime/conda environments and exact train、eval and smoke commands, including CWD、environment ID、expected artifact、last verified date and evidence. Agents use verified commands first, mark stale entries before replacement, and update the same row after successful verification instead of accumulating near-duplicate commands.
+`.ai/PROJECT.md` initializes canonical runtime/conda environments and exact train、eval and smoke commands, including CWD、environment ID、expected artifact、last verified date and evidence. Agents use verified commands first, mark stale entries before replacement, and update the same row after successful verification instead of accumulating near-duplicate commands.
 
 ## 5. Minimal-diff check
 
-v1.3.1 intentionally does not alter Codex hook/P2P semantics、team-state/lease/freeze triggers、memory governance、long-run behavior、OMO Team Mode、Claude single-agent routing、semantic ZIP implementation、Pro_Space target or migration Git defaults.
+v1.3.1 intentionally does not alter Codex hook/P2P semantics、team-state/lease/freeze triggers、memory governance、long-run behavior、OMO Team Mode、Claude single-agent routing、semantic ZIP splitting algorithm、Pro_Space target or migration Git defaults.
 
-Changed scope is limited to route authority、workflow wording、project command registry、cloud-review handoff documentation/config、one prompt helper/template、tests and version logs.
+The addendum scope is limited to cloud-Pro prompt/output contract、same-folder delivery naming、prompt/stage helpers、artifact docs/config、tests and logs.
 
-## 6. v1.3.1 verification
+## 6. Verification
 
 ```text
-pro_review_handoff unit tests                         PASS
-published branch/commit prompt fields                 PASS
-missing review type preserves Owner placeholder       PASS
-unpushed local commit rejected                        PASS
-compressed ZIP >95 MiB rejected                       PASS
-AGENTS automatic route marker                         PASS
-PROJECT command registry marker                       PASS
-Python compilation                                    PASS
+published branch/commit prompt fields                    PASS
+concise five-item Owner output contract                  PASS
+full-review ZIP contract                                 PASS
+copy-ready local Worker parse prompt                     PASS
+Worker/Pro same-folder prefixes                          PASS
+prompt helper excludes Pro ZIP from Worker input list    PASS
+historical unprefixed Worker ZIP fallback                PASS
+compressed ZIP >95 MiB rejection                        PASS
+stage packer Worker-prefixed ZIP/sidecar generation      PASS
+Python compilation                                       PASS
 ```
 
 ---
@@ -88,12 +104,8 @@ This repository update publishes the approved v1.3.0 adaptive workflow and folds
 ## Artifact handoff fixes
 
 - The default cloud-facing ZIP ceiling is `95 MiB` (`99,614,720` bytes).
-- Oversized bundles are split into independently readable standard ZIP files by meaning, for example:
-  - `source_and_configs.zip`;
-  - `logs_and_metrics.zip`;
-  - `plots_and_evidence.zip`;
-  - `checkpoints_part01.zip`.
-- Every multi-ZIP release includes a plain-text `BUNDLE_INDEX.md` describing order, purpose, contents, compressed size, and exclusions.
+- Oversized bundles are split into independently readable standard ZIP files by meaning.
+- Every multi-ZIP release includes a plain-text bundle index describing order, purpose, contents, compressed size, and exclusions.
 - Stage bundle indexes do not use SHA-256.
 - `.z01/.z02/.zip`, `.zip.001`, and similar reconstruction-dependent split volumes are prohibited.
 - A single checkpoint over the limit is excluded unless an explicit authenticated rclone exception is approved. It is never binary-sliced into unusable cloud fragments.

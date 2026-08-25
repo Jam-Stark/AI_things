@@ -30,7 +30,7 @@ class V131Tests(unittest.TestCase):
         subprocess.run(["git", "push", "-qu", "origin", "review"], cwd=self.repo, check=True)
         self.release = self.base / "release"
         self.release.mkdir()
-        with zipfile.ZipFile(self.release / "logs_and_metrics.zip", "w") as archive:
+        with zipfile.ZipFile(self.release / "worker_delivery__logs_and_metrics.zip", "w") as archive:
             archive.writestr("metrics.json", "{}")
 
     def tearDown(self) -> None:
@@ -56,7 +56,7 @@ class V131Tests(unittest.TestCase):
             check=False,
         )
 
-    def test_prompt_contains_published_git_and_review_order(self) -> None:
+    def test_prompt_contains_published_git_two_tier_output_and_worker_prompt(self) -> None:
         result = self.run_helper(
             "--review-type",
             "阶段验收",
@@ -65,11 +65,18 @@ class V131Tests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stderr)
         text = (self.release / "PRO_REVIEW_PROMPT.md").read_text(encoding="utf-8")
-        self.assertIn("Branch: `review`", text)
-        self.assertIn("logs_and_metrics.zip", text)
-        self.assertIn("阶段验收", text)
+        self.assertIn("分支：`review`", text)
+        self.assertIn("worker_delivery__logs_and_metrics.zip", text)
+        self.assertIn("pro_delivery__full_review.zip", text)
+        self.assertIn("FULL_REVIEW.md", text)
+        self.assertIn("LOCAL_WORKER_PARSE_PROMPT.md", text)
+        self.assertIn("同一任务目录", text)
+        self.assertIn("精简版", text)
+        self.assertIn("全量版", text)
         self.assertIn("One more thing", text)
-        self.assertIn("local AI", text)
+        self.assertIn("请解析本轮 Cloud Pro 全量交付", text)
+        self.assertIn("不得自动升级为本地硬门槛", text)
+        self.assertIn("NOT_UPLOADED", text)
 
     def test_missing_review_type_keeps_owner_placeholder(self) -> None:
         result = self.run_helper()
@@ -86,21 +93,39 @@ class V131Tests(unittest.TestCase):
         self.assertIn("not the verified pushed commit", result.stderr)
 
     def test_limit_is_compressed_zip_file_size(self) -> None:
-        oversized = self.release / "plots_and_evidence.zip"
+        oversized = self.release / "worker_delivery__plots_and_evidence.zip"
         with oversized.open("wb") as handle:
             handle.truncate(95 * 1024 * 1024 + 1)
         result = self.run_helper()
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("compressed ZIP exceeds 95 MiB", result.stderr)
 
-    def test_templates_declare_automatic_route_and_command_registry(self) -> None:
+    def test_existing_pro_zip_is_not_listed_as_worker_input(self) -> None:
+        with zipfile.ZipFile(self.release / "pro_delivery__full_review.zip", "w") as archive:
+            archive.writestr("FULL_REVIEW.md", "old")
+        result = self.run_helper()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        text = (self.release / "PRO_REVIEW_PROMPT.md").read_text(encoding="utf-8")
+        self.assertEqual(text.count("compressed bytes"), 1)
+        self.assertIn("worker_delivery__logs_and_metrics.zip", text)
+
+    def test_custom_pro_filename_must_keep_pro_prefix(self) -> None:
+        result = self.run_helper("--pro-delivery-zip", "answer.zip")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("pro_delivery__", result.stderr)
+
+    def test_templates_declare_automatic_route_command_registry_and_delivery_roles(self) -> None:
         agents = (ROOT / "templates" / "AGENTS.md").read_text(encoding="utf-8")
         project = (ROOT / "templates" / "PROJECT.md").read_text(encoding="utf-8")
         handoff = (ROOT / "references" / "ARTIFACT_HANDOFF.md").read_text(encoding="utf-8")
+        config = (ROOT / "templates" / "ARTIFACT_SYNC.toml").read_text(encoding="utf-8")
         self.assertIn("Automatic route selection", agents)
         self.assertIn("explicitly requires Main to delegate", agents)
         self.assertIn("Environment and command registry", project)
         self.assertIn("final compressed size", handoff)
+        self.assertIn("worker_delivery__", handoff)
+        self.assertIn("pro_delivery__full_review.zip", handoff)
+        self.assertIn('worker_prefix = "worker_delivery__"', config)
 
 
 if __name__ == "__main__":

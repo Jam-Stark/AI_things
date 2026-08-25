@@ -10,11 +10,20 @@
 - Cloud Pro review 先 commit+push 并验证远程 commit，再上传 artifacts 和生成 `PRO_REVIEW_PROMPT.md`；
 - 95 MiB 指每个**压缩完成后的 ZIP 文件大小**，不是原始文件大小。
 
+### Pro full-delivery addendum — version remains 1.3.1
+
+- 对话窗口只给 Owner 五项精简结果；
+- Pro 同时把详细结果打包为 `pro_delivery__full_review.zip`，其中包含 `FULL_REVIEW.md` 和 `LOCAL_WORKER_PARSE_PROMPT.md`；
+- 精简结果第 5 项给出同一 Drive 任务目录、Pro ZIP 地址和可直接复制给本地 Worker 的解析 prompt；
+- 同一任务目录中，Worker 输入使用 `worker_delivery__` 前缀，Pro 输出使用 `pro_delivery__` 前缀。
+
 Existing project updates follow `UPDATE_GUIDE_1.3.1.md`. Projects using cloud review copy:
 
 ```text
 scripts/pro_review_handoff.py -> .ai/scripts/pro_review_handoff.py
 templates/PRO_REVIEW_PROMPT.md -> .ai/PRO_REVIEW_PROMPT.md
+scripts/stage_artifacts.py -> .ai/scripts/stage_artifacts.py
+templates/ARTIFACT_SYNC.toml -> .ai/artifact-sync.toml
 ```
 
 ---
@@ -68,7 +77,7 @@ python scripts/bootstrap.py audit /path/to/project ...
 - repository-local hook commands resolve from the Git root, so starting Codex in a subdirectory remains valid;
 - `PostToolUse` records coordination metadata only;
 - `SessionStart` consumes pending events once and archives them;
-- cloud-facing stage artifacts use a 95 MiB per-ZIP ceiling and semantic, independently readable standard ZIP files with `BUNDLE_INDEX.md`.
+- cloud-facing stage artifacts use a 95 MiB per-ZIP ceiling and semantic, independently readable standard ZIP files with a Worker-prefixed bundle index.
 
 After installing or changing project hooks, review the exact hook definitions with Codex `/hooks` before relying on them.
 

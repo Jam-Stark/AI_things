@@ -30,6 +30,9 @@ except ModuleNotFoundError as exc:
 MIB = 1024 * 1024
 DEFAULT_LIMIT = 95 * MIB
 DEFAULT_CONFIG = Path('.ai/artifact-sync.toml')
+DEFAULT_WORKER_PREFIX = 'worker_delivery__'
+DEFAULT_PRO_PREFIX = 'pro_delivery__'
+DEFAULT_PRO_ZIP = 'pro_delivery__full_review.zip'
 CHECKPOINT_SUFFIXES = {'.pt','.pth','.ckpt','.onnx','.safetensors','.bin'}
 MEDIA_SUFFIXES = {'.png','.jpg','.jpeg','.webp','.gif','.svg','.pdf','.mp4','.mov','.avi','.mkv','.webm','.html'}
 SOURCE_SUFFIXES = {'.py','.pyi','.ipynb','.toml','.yaml','.yml','.json','.jsonc','.ini','.cfg','.conf','.xml','.urdf','.md'}
@@ -98,6 +101,21 @@ def slug(text: str) -> str:
 
 def match(path: str, patterns: Iterable[str]) -> bool:
     return any(fnmatch.fnmatchcase(path, pattern) for pattern in patterns)
+
+
+def naming(cfg: dict[str,Any]) -> tuple[str,str,str]:
+    values = cfg.get('naming', {})
+    worker = str(values.get('worker_prefix', DEFAULT_WORKER_PREFIX))
+    pro = str(values.get('pro_prefix', DEFAULT_PRO_PREFIX))
+    pro_zip = str(values.get('pro_full_review_zip', DEFAULT_PRO_ZIP))
+    for label, value in (('worker_prefix', worker), ('pro_prefix', pro), ('pro_full_review_zip', pro_zip)):
+        if not value or '/' in value or '\\' in value:
+            raise SystemExit(f'invalid naming.{label}: {value!r}')
+    if not worker.endswith('__') or not pro.endswith('__'):
+        raise SystemExit('worker_prefix and pro_prefix must end with double underscore')
+    if not pro_zip.startswith(pro) or not pro_zip.endswith('.zip'):
+        raise SystemExit('pro_full_review_zip must use pro_prefix and end with .zip')
+    return worker, pro, pro_zip
 
 
 def discover(root: Path) -> dict[str,str]:
@@ -169,14 +187,15 @@ def zip_once(destination: Path, files: list[Candidate]) -> int:
     return destination.stat().st_size
 
 
-def split_to_limit(out: Path, base: str, files: list[Candidate], limit: int, checkpoint_group: bool) -> tuple[list[Archive],list[Exclusion]]:
+def split_to_limit(out: Path, base: str, files: list[Candidate], limit: int, checkpoint_group: bool, worker_prefix: str) -> tuple[list[Archive],list[Exclusion]]:
     if not files:
         return [], []
     probe = out / f'.{base}-{os.getpid()}-probe.zip'
     size = zip_once(probe, files); probe.unlink()
     if size <= limit:
         name = f'{base}.zip'; final = out / name; size = zip_once(final, files)
-        return [Archive(name, base.split('_part')[0], tuple(files), size)], []
+        group_name = base.removeprefix(worker_prefix).split('_part')[0]
+        return [Archive(name, group_name, tuple(files), size)], []
     if len(files) == 1:
         reason = 'checkpoint-over-cloud-limit-use-rclone-exception' if checkpoint_group else 'single-file-over-cloud-limit'
         return [], [Exclusion(files[0].relative, reason)]
@@ -187,39 +206,40 @@ def split_to_limit(out: Path, base: str, files: list[Candidate], limit: int, che
         else: right.append(item); rsize += item.size
     records: list[Archive] = []; excluded: list[Exclusion] = []
     for idx, subset in enumerate((left,right), 1):
-        sub_records, sub_excluded = split_to_limit(out, f'{base}_part{idx:02d}', subset, limit, checkpoint_group)
+        sub_records, sub_excluded = split_to_limit(out, f'{base}_part{idx:02d}', subset, limit, checkpoint_group, worker_prefix)
         records.extend(sub_records); excluded.extend(sub_excluded)
     return records, excluded
 
 
-def metadata(root: Path, args: argparse.Namespace, accepted: list[Candidate], rejected: list[Exclusion]) -> dict[str,Any]:
+def metadata(root: Path, args: argparse.Namespace, accepted: list[Candidate], rejected: list[Exclusion], worker_prefix: str, pro_prefix: str, pro_zip: str) -> dict[str,Any]:
     current = datetime.now(ZoneInfo('Asia/Hong_Kong'))
     return {
-        'schema_version': 3, 'project': args.project or root.name, 'worktree': args.worktree or root.name,
+        'schema_version': 4, 'project': args.project or root.name, 'worktree': args.worktree or root.name,
         'stage': args.stage, 'timestamp_hkt': current.isoformat(timespec='seconds'),
         'release': f"{current.strftime('%Y%m%d-%H%M%S-HKT')}__{git_text(root,'rev-parse','--short=12','HEAD')}",
         'branch': git_text(root,'branch','--show-current') or 'detached', 'git_revision': git_text(root,'rev-parse','HEAD'),
         'handoff_trigger': args.trigger, 'included': [{'path':x.relative,'bytes':x.size,'source':x.source} for x in accepted],
         'excluded': [{'path':x.relative,'reason':x.reason} for x in rejected],
         'questions': args.question or [],
+        'delivery_naming': {'worker_prefix': worker_prefix, 'pro_prefix': pro_prefix, 'pro_full_review_zip': pro_zip},
         'evidence_boundary': 'Selected artifact presence does not by itself prove runtime, experiment, or hardware success.',
     }
 
 
 def index_text(meta: dict[str,Any], archives: list[Archive], excluded: list[Exclusion], limit: int) -> str:
-    lines = [f"# Bundle Index — {meta['project']} / {meta['stage']}",'',f"Release: `{meta['release']}`",f"Single-ZIP ceiling: `{limit}` bytes (95 MiB default)",'','## Archives']
+    lines = [f"# Worker Bundle Index — {meta['project']} / {meta['stage']}",'',f"Release: `{meta['release']}`",f"Single-ZIP ceiling: `{limit}` bytes (95 MiB default, final compressed size)",'','## Worker delivery archives']
     for idx, record in enumerate(archives,1):
         lines += ['',f"### {idx}. `{record.name}`",'',f"Purpose: {PURPOSE.get(record.group,'阶段证据。')}",f"Compressed bytes: `{record.size}`",'','Contents:']
         lines += [f"- `{item.relative}`" for item in record.files]
     lines += ['','## Not packaged']
     lines += [f"- `{item.relative}` — {item.reason}" for item in excluded] or ['- None.']
-    lines += ['','Each ZIP above is a normal independent archive. No `.z01/.z02` or binary reconstruction is required.','']
+    lines += ['',f"The cloud Pro full-review archive will be uploaded later into this same task folder as `{meta['delivery_naming']['pro_full_review_zip']}`.",'Each ZIP above is a normal independent archive. No `.z01/.z02` or binary reconstruction is required.','']
     return '\n'.join(lines)
 
 
 def handoff_text(meta: dict[str,Any]) -> str:
     questions = meta['questions'] or ['请独立分析本阶段结果、失败模式、替代解释和下一阶段候选。']
-    return '\n'.join([f"# Pro handoff — {meta['project']} / {meta['stage']}",'',f"Git revision: `{meta['git_revision']}`",f"Branch: `{meta['branch']}`",'', '## Questions', *[f'- {q}' for q in questions], '', '## Evidence boundary', meta['evidence_boundary'], ''])
+    return '\n'.join([f"# Worker-to-Pro handoff — {meta['project']} / {meta['stage']}",'',f"Git revision: `{meta['git_revision']}`",f"Branch: `{meta['branch']}`",'', '## Questions', *[f'- {q}' for q in questions], '', '## Evidence boundary', meta['evidence_boundary'], '', '## Expected Pro delivery', f"Upload `{meta['delivery_naming']['pro_full_review_zip']}` into this same release folder after review.", ''])
 
 
 def pack(args: argparse.Namespace) -> int:
@@ -228,7 +248,8 @@ def pack(args: argparse.Namespace) -> int:
     root = git_root(args.repo); cfg = load_config(root, args.config); accepted, rejected = select(root,cfg,args)
     if not accepted and not args.allow_empty:
         raise SystemExit('no eligible artifacts')
-    meta = metadata(root,args,accepted,rejected); base = args.output or root / '.ai/outgoing-artifacts'
+    worker_prefix, pro_prefix, pro_zip = naming(cfg)
+    meta = metadata(root,args,accepted,rejected,worker_prefix,pro_prefix,pro_zip); base = args.output or root / '.ai/outgoing-artifacts'
     release = base / meta['project'] / meta['worktree'] / slug(args.stage) / meta['release']
     release.mkdir(parents=True, exist_ok=False)
     limit = int(cfg.get('packaging',{}).get('max_single_zip_bytes', DEFAULT_LIMIT))
@@ -239,15 +260,15 @@ def pack(args: argparse.Namespace) -> int:
         grouped = {name: [] for name in ORDER}
         for item in accepted: grouped[group(item)].append(item)
         for name in ORDER:
-            rec, exc = split_to_limit(release, name, grouped[name], limit, name=='checkpoints')
+            rec, exc = split_to_limit(release, f'{worker_prefix}{name}', grouped[name], limit, name=='checkpoints', worker_prefix)
             records.extend(rec); oversized.extend(exc)
         delivered = {item.relative for rec in records for item in rec.files}
         meta['included'] = [x for x in meta['included'] if x['path'] in delivered]
         all_excluded = rejected + oversized; meta['excluded'] = [{'path':x.relative,'reason':x.reason} for x in all_excluded]
         meta['packaging'] = {'max_single_zip_bytes':limit,'strategy':'semantic-independent-standard-zips','split_volume_archives':False,'archives':[{'name':r.name,'group':r.group,'compressed_bytes':r.size,'files':[x.relative for x in r.files]} for r in records]}
-        (release/'BUNDLE_MANIFEST.json').write_text(json.dumps(meta,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-        (release/'BUNDLE_INDEX.md').write_text(index_text(meta,records,all_excluded,limit),encoding='utf-8')
-        (release/'PRO_HANDOFF.md').write_text(handoff_text(meta),encoding='utf-8')
+        (release/f'{worker_prefix}BUNDLE_MANIFEST.json').write_text(json.dumps(meta,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+        (release/f'{worker_prefix}BUNDLE_INDEX.md').write_text(index_text(meta,records,all_excluded,limit),encoding='utf-8')
+        (release/f'{worker_prefix}PRO_HANDOFF.md').write_text(handoff_text(meta),encoding='utf-8')
         if not records and not args.allow_empty: raise SystemExit('no cloud-readable archive produced')
     except BaseException:
         shutil.rmtree(release, ignore_errors=True); raise

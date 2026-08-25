@@ -38,8 +38,14 @@ max_bundle_bytes = 10737418240
 # Keep 5 MiB below the observed 100 MB connector boundary.
 max_single_zip_bytes = 99614720
 strategy = "single-or-semantic-standard-zips"
-index_filename = "BUNDLE_INDEX.md"
+index_filename = "worker_delivery__BUNDLE_INDEX.md"
 split_volume_archives = false
+
+[naming]
+# Worker artifacts and the cloud Pro answer share one immutable task folder.
+worker_prefix = "worker_delivery__"
+pro_prefix = "pro_delivery__"
+pro_full_review_zip = "pro_delivery__full_review.zip"
 
 [upload]
 backend = "capability-router"
@@ -52,3 +58,5 @@ rclone_remote = "gdrive"
 require_git_publish = true
 git_remote = "origin"
 prompt_filename = "PRO_REVIEW_PROMPT.md"
+full_review_filename = "FULL_REVIEW.md"
+worker_parse_prompt_filename = "LOCAL_WORKER_PARSE_PROMPT.md"

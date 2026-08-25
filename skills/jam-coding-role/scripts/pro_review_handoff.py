@@ -9,6 +9,9 @@ from pathlib import Path
 
 MIB = 1024 * 1024
 MAX_ZIP_BYTES = 95 * MIB
+WORKER_PREFIX = "worker_delivery__"
+PRO_PREFIX = "pro_delivery__"
+PRO_DELIVERY_ZIP = "pro_delivery__full_review.zip"
 OWNER_PLACEHOLDER = "[OWNER: 请填写诊断问题/阶段验收/事实核查/QA等需求类型]"
 REQUEST_PLACEHOLDER = "[OWNER: 请填写本轮具体问题、前置回答要求和验收范围]"
 
@@ -57,10 +60,19 @@ def verify_git_publish(root: Path, remote: str, branch: str | None) -> tuple[str
     return normalize_remote(run(root, "remote", "get-url", remote)), current, head
 
 
-def zip_lines(release: Path) -> list[str]:
+def worker_archives(release: Path) -> list[Path]:
     archives = sorted(path for path in release.glob("*.zip") if path.is_file())
+    preferred = [path for path in archives if path.name.startswith(WORKER_PREFIX)]
+    if preferred:
+        return preferred
+    # Backward compatibility for releases created before the delivery-role prefixes.
+    return [path for path in archives if not path.name.startswith(PRO_PREFIX)]
+
+
+def zip_lines(release: Path) -> list[str]:
+    archives = worker_archives(release)
     if not archives:
-        raise SystemExit(f"no ZIP packages found in {release}")
+        raise SystemExit(f"no Worker ZIP packages found in {release}")
     lines: list[str] = []
     for path in archives:
         size = path.stat().st_size
@@ -70,6 +82,23 @@ def zip_lines(release: Path) -> list[str]:
             )
         lines.append(f"  - `{path.name}` ({size} compressed bytes)")
     return lines
+
+
+def local_worker_parse_prompt(
+    *,
+    repo_url: str,
+    branch: str,
+    commit: str,
+    drive_location: str,
+    pro_delivery_zip: str,
+) -> str:
+    return f"""请解析本轮 Cloud Pro 全量交付：
+
+1. 从 Google Drive 同一任务目录 `{drive_location}` 下载 `{pro_delivery_zip}`，解压并阅读 `FULL_REVIEW.md`；同时读取包内 `LOCAL_WORKER_PARSE_PROMPT.md`，确认内容与本 prompt 一致。
+2. 以云端审阅 source lock：`{repo_url}` / branch `{branch}` / commit `{commit}`。不要因此 reset、stash、discard 或覆盖本地较新的工作；先比较本地 HEAD、实际 diff 和当前生产环境。
+3. 将 Cloud Pro 结论分为：远程代码/交付包直接支持的事实、推断、未知项、必须由本地 IsaacLab/GPU/log/hardware 验证的事项。云端建议的科学 gate、阈值和资源要求不得自动升级为本地硬门槛。
+4. 结合本地 `.ai/PROJECT.md` command registry、当前 memory、resolved config、真实日志和资源状态，审查可执行性；保留有价值的 insights/novelty，修正不适合生产环境的 gate、命令和验收标准。
+5. 输出：本地核验结果、采用/修改/拒绝的建议及理由、最小下一步方案、所需命令与证据、仍需 Owner 决定的事项。没有本地证据时明确写 `NOT_RUN` 或 `INCONCLUSIVE`。"""
 
 
 def render(
@@ -82,15 +111,26 @@ def render(
     zip_list: list[str],
     review_type: str | None,
     owner_request: str | None,
+    pro_delivery_zip: str,
 ) -> str:
+    worker_prompt = local_worker_parse_prompt(
+        repo_url=repo_url,
+        branch=branch,
+        commit=commit,
+        drive_location=drive_location,
+        pro_delivery_zip=pro_delivery_zip,
+    )
     replacements = {
         "{{REPO_URL}}": repo_url,
         "{{BRANCH}}": branch,
         "{{COMMIT_SHA}}": commit,
         "{{DRIVE_LOCATION}}": drive_location,
         "{{ZIP_LIST}}": "\n".join(zip_list),
+        "{{WORKER_ZIP_LIST}}": "\n".join(zip_list),
         "{{REVIEW_TYPE}}": review_type.strip() if review_type and review_type.strip() else OWNER_PLACEHOLDER,
         "{{OWNER_REQUEST}}": owner_request.strip() if owner_request and owner_request.strip() else REQUEST_PLACEHOLDER,
+        "{{PRO_DELIVERY_ZIP}}": pro_delivery_zip,
+        "{{LOCAL_WORKER_PARSE_PROMPT}}": worker_prompt,
     }
     for key, value in replacements.items():
         template = template.replace(key, value)
@@ -108,6 +148,7 @@ def parser() -> argparse.ArgumentParser:
     root.add_argument("--branch")
     root.add_argument("--template", type=Path)
     root.add_argument("--output", type=Path)
+    root.add_argument("--pro-delivery-zip", default=PRO_DELIVERY_ZIP)
     return root
 
 
@@ -117,6 +158,8 @@ def main() -> int:
     release = args.release_dir.expanduser().resolve()
     if not release.is_dir():
         raise SystemExit(f"release directory not found: {release}")
+    if Path(args.pro_delivery_zip).name != args.pro_delivery_zip or not args.pro_delivery_zip.startswith(PRO_PREFIX) or not args.pro_delivery_zip.endswith('.zip'):
+        raise SystemExit("--pro-delivery-zip must be a simple pro_delivery__*.zip filename")
     repo_url, branch, commit = verify_git_publish(root, args.remote, args.branch)
     template_path = args.template
     if template_path is None:
@@ -138,6 +181,7 @@ def main() -> int:
             zip_list=zip_lines(release),
             review_type=args.review_type,
             owner_request=args.owner_request,
+            pro_delivery_zip=args.pro_delivery_zip,
         ),
         encoding="utf-8",
     )

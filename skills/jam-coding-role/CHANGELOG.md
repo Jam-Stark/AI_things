@@ -10,6 +10,14 @@
 - Explicitly stated that 95 MiB limits the final compressed size of each generated ZIP, not raw input size.
 - Added `UPDATE_GUIDE_1.3.1.md` for existing project installations.
 
+### v1.3.1 Pro full-delivery addendum — version unchanged
+
+- Split the cloud Pro response into a concise five-item Owner view and one detailed `pro_delivery__full_review.zip` for the local Worker AI.
+- The detailed ZIP contains `FULL_REVIEW.md` and `LOCAL_WORKER_PARSE_PROMPT.md`; concise item 5 gives the same copy-ready Worker prompt and exact Drive address.
+- Worker inputs and Pro outputs now share one immutable task folder. Worker files use `worker_delivery__`; the Pro answer uses `pro_delivery__`.
+- Updated the stage packer to create prefixed Worker ZIPs and sidecars, while the prompt helper lists only Worker input ZIPs and reserves `pro_delivery__full_review.zip` for the Pro result.
+- Historical task folders remain valid and do not need renaming.
+
 ---
 
 # Jam Coding Role v1.3.0 — Adaptive Coordination

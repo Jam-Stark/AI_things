@@ -92,9 +92,10 @@ class HotfixTests(unittest.TestCase):
                 path=root/rel; path.parent.mkdir(parents=True,exist_ok=True); rng=random.Random(seed); path.write_bytes(bytes(rng.randrange(256) for _ in range(18000)))
             cp=root/'logs_rl/s/model.pt'; cp.parent.mkdir(parents=True,exist_ok=True); cp.write_bytes(os.urandom(50000))
             out=root/'out'; result=run(sys.executable,str(STAGE),'pack','--repo',str(root),'--config',str(cfg),'--stage','s','--project','P','--worktree','W','--output',str(out),'--trigger','stage-closure','--confirm-stage-handoff','--include-checkpoints',cwd=root); self.assertEqual(result.returncode,0,result.stdout+result.stderr)
-            release=next((out/'P'/'W'/'s').iterdir()); names={x.name for x in release.glob('*.zip')}; self.assertIn('source_and_configs.zip',names); self.assertIn('logs_and_metrics.zip',names); self.assertIn('plots_and_evidence.zip',names); self.assertFalse(any('.z0' in x or '.zip.' in x for x in names)); self.assertFalse(any(x.startswith('checkpoints') for x in names))
+            release=next((out/'P'/'W'/'s').iterdir()); names={x.name for x in release.glob('*.zip')}; self.assertIn('worker_delivery__source_and_configs.zip',names); self.assertIn('worker_delivery__logs_and_metrics.zip',names); self.assertIn('worker_delivery__plots_and_evidence.zip',names); self.assertFalse(any('.z0' in x or '.zip.' in x for x in names)); self.assertFalse(any(x.startswith('worker_delivery__checkpoints') for x in names))
             for path in release.glob('*.zip'): self.assertLessEqual(path.stat().st_size,32768); zipfile.ZipFile(path).testzip()
-            index=(release/'BUNDLE_INDEX.md').read_text(); self.assertIn('model.pt',index); self.assertIn('rclone',index); self.assertNotIn('SHA-256',index)
+            index=(release/'worker_delivery__BUNDLE_INDEX.md').read_text(); self.assertIn('model.pt',index); self.assertIn('rclone',index); self.assertIn('pro_delivery__full_review.zip',index); self.assertNotIn('SHA-256',index)
+            self.assertTrue((release/'worker_delivery__BUNDLE_MANIFEST.json').is_file()); self.assertTrue((release/'worker_delivery__PRO_HANDOFF.md').is_file())
 
 
 if __name__ == '__main__': unittest.main()

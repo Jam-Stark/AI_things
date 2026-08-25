@@ -1,6 +1,24 @@
 # Jam Coding Role v1.3.1 — Verification
 
-## v1.3.1 delta
+## Pro full-delivery addendum
+
+```text
+Concise five-item Owner response contract                  PASS
+Detailed pro_delivery__full_review.zip contract            PASS
+FULL_REVIEW.md / LOCAL_WORKER_PARSE_PROMPT.md contents     PASS
+Copy-ready Worker prompt includes source lock/local limits PASS
+Worker/Pro same-folder prefix design                       PASS
+Prompt helper lists Worker ZIPs only                       PASS
+Historical unprefixed Worker ZIP fallback                  PASS
+Existing Pro ZIP excluded from Worker input list           PASS
+Stage packer emits worker_delivery__ ZIPs and sidecars      PASS
+95 MiB remains final compressed ZIP limit                  PASS
+Python syntax compilation                                  PASS
+```
+
+The addendum keeps `VERSION=1.3.1` and does not change route authority、Git publish verification、Codex hooks/P2P、team-state、memory、long-run、OMO、Claude or Pro_Space authorization.
+
+## Original v1.3.1 delta
 
 ```text
 Prompt generated from pushed branch/commit                 PASS
@@ -15,8 +33,6 @@ PROJECT command registry present                            PASS
 ARTIFACT_HANDOFF says compressed size, not raw size         PASS
 Python syntax compilation                                   PASS
 ```
-
-The v1.3.1 comparison did not modify v1.3.0 Codex hooks、team-state、memory、long-run、OMO、Claude or semantic ZIP implementation.
 
 ## Preserved v1.3.0 repository verification
 
