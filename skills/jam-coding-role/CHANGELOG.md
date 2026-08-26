@@ -1,5 +1,14 @@
 # Jam Coding Role Changelog
 
+## 1.3.2 — Proactive delegation and Owner-transferred Pro package
+
+- Added a mandatory delegation gate before substantive work on every non-FAST request.
+- When independent lanes、specialist context、material independent review/QA value or material parallel/context benefit exists, Main must immediately spawn the minimum useful agents rather than waiting for the Owner to say “team” or completing delegated work itself first.
+- A non-FAST single-agent route now requires a concrete `NO_DELEGATION_REASON`; FAST remains Main-direct and persistent coordination facilities remain trigger-driven.
+- Changed Cloud Pro full-delivery transport: Google Drive contains Worker input artifacts only. The Pro attaches `pro_delivery__full_review.zip` in its conversation; Owner uploads it in the local Worker conversation.
+- Added a project-configured Pro review document root and deterministic local destination for preserving/extracting the Owner-transferred ZIP.
+- Updated the Pro prompt/helper、artifact handoff contract、project/config templates、tests and existing-project update guide.
+
 ## 1.3.1 — Minimal routing and cloud-review handoff update
 
 - Declared root `AGENTS.md` as the repository's project-level workflow authority, below system/developer/Owner instructions but above runtime defaults and ordinary adapters.
@@ -10,19 +19,17 @@
 - Explicitly stated that 95 MiB limits the final compressed size of each generated ZIP, not raw input size.
 - Added `UPDATE_GUIDE_1.3.1.md` for existing project installations.
 
-### v1.3.1 Pro full-delivery addendum — version unchanged
+### v1.3.1 Pro full-delivery addendum — superseded transport
 
 - Split the cloud Pro response into a concise five-item Owner view and one detailed `pro_delivery__full_review.zip` for the local Worker AI.
-- The detailed ZIP contains `FULL_REVIEW.md` and `LOCAL_WORKER_PARSE_PROMPT.md`; concise item 5 gives the same copy-ready Worker prompt and exact Drive address.
-- Worker inputs and Pro outputs now share one immutable task folder. Worker files use `worker_delivery__`; the Pro answer uses `pro_delivery__`.
-- Updated the stage packer to create prefixed Worker ZIPs and sidecars, while the prompt helper lists only Worker input ZIPs and reserves `pro_delivery__full_review.zip` for the Pro result.
-- Historical task folders remain valid and do not need renaming.
+- The detailed ZIP contains `FULL_REVIEW.md` and `LOCAL_WORKER_PARSE_PROMPT.md`.
+- The original addendum placed Worker inputs and Pro outputs in one Drive task folder. v1.3.2 supersedes only this transport detail: the Pro ZIP is now attached in the Pro conversation and transferred by Owner.
 
 ---
 
 # Jam Coding Role v1.3.0 — Adaptive Coordination
 
-> Release lineage: `AI_things/main` previously carried v1.0.0. v1.1.0 and v1.2.0 were reviewed delivery candidates but were not the published repository version. v1.3.0 is the consolidated repository release that incorporates the approved runtime, language, stage-decision, artifact, P2P, team-state, memory and lean-routing changes.
+> Release lineage: `AI_things/main` previously carried v1.0.0. v1.1.0 and v1.2.0 were reviewed delivery candidates but were not the published repository version. v1.3.0 is the consolidated repository release that incorporates the approved runtime、language、stage-decision、artifact、P2P、team-state、memory and lean-routing changes.
 
 ## 2026-08-23 repository update
 
@@ -31,8 +38,7 @@
 - Made hook JSON parsing and Git-root discovery fail visibly; strict PreToolUse enforcement now fails closed.
 - Reduced PostToolUse persistence to coordination metadata only.
 - Made SessionStart pending-event delivery one-shot with delivered/archive state.
-- Added a 95 MiB cloud ZIP ceiling, semantic standard-ZIP splitting, `BUNDLE_INDEX.md`, split-volume rejection, and oversized-checkpoint handling.
-- Added `UPDATE_LOG.md` as the detailed implementation and verification record.
+- Added a 95 MiB cloud ZIP ceiling、semantic standard-ZIP splitting、bundle index、split-volume rejection and oversized-checkpoint handling.
 
 ## Summary
 
@@ -43,35 +49,26 @@ v1.3.0 keeps the portable behavior kernel and advanced coordination capabilities
 - FAST / STANDARD / HIGH_RISK routing with explicit activation rules.
 - Independent control-facility trigger matrix for ledger、lease、freeze、verdict、curator、long-run and artifact handoff.
 - Lazy team-state activation with `adaptive` and `strict` modes.
-- `team_state.py status/activate/deactivate/hook-check-spawn` commands.
 - Explicit `--confirm-stage-handoff` requirement for artifact packing/upload.
-- Opt-in migration Git flags: `--checkpoint-commit` and `--migration-commit`, plus `--confirm-user-authorized-commit` for actual Git writes.
+- Opt-in migration Git flags and current-authorization confirmation.
 
 ## Changed
 
-- Root `AGENTS.md` is now a route table. Only core documents are read by default; optional documents are conditional.
-- Ordinary Codex spawns no longer require a disk-backed task contract.
-- Codex hooks are no-op while coordination is inactive and do not create runtime state.
-- Team ledger is no longer a prerequisite for FAST or ordinary STANDARD tasks.
-- Candidate freeze is limited to formal review/QA, ambiguous dirty/shared candidates or cross-session review.
-- Leases are limited to actual concurrent writers or exclusive resources; read-only agents are not leased.
-- Memory curator is candidate-triggered rather than a closure stage.
-- Artifact handoff is explicit rather than automatic at task completion.
-- OMO Team Mode defaults to disabled.
-- OpenCode and Claude preload only the core routing files.
-- A single authorized long run may use a receipt/tmux without activating the full team ledger.
+- Root `AGENTS.md` is a route table; optional documents are conditional.
+- Ordinary Codex spawns do not require a disk-backed task contract.
+- Team ledger is not a prerequisite for FAST or ordinary STANDARD tasks.
+- Candidate freeze、leases、memory curator and artifact handoff remain trigger-driven.
+- OMO Team Mode defaults to disabled; standalone Claude remains single-agent.
 
 ## Preserved
 
 - Codex MultiAgentV2 P2P communication.
 - Main-only authority for scope、acceptance、resources、Git and final integration.
-- Standalone Claude Code single-agent routing.
-- OMO official ordinary delegation and Team Mode semantics.
 - Active memory restructuring capability.
-- Pro_Space create-only artifact target.
+- Pro_Space Worker artifact target.
 - Chinese native-language expression rules.
 - Claim-matched scientific evidence and hardware safety boundaries.
 
 ## Git behavior
 
-The migration tool defaults to no commits. A checkpoint commit and migration commit are created only when the caller supplies explicit flags under current Owner authorization. The tool never pushes.
+Migration tools default to no commits. Commit flags require current Owner authorization. The generic migration tool never pushes.

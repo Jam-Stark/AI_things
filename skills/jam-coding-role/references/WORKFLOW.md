@@ -1,11 +1,11 @@
 <!-- managed-by: jam-coding-role; file: WORKFLOW.md -->
-# Adaptive workflow v1.3.1
+# Adaptive workflow v1.3.2
 
 ## 1. Light kernel, automatic routing
 
 The default is prompt-level coordination. Persistent ledger, disk contracts, leases, candidate freeze, memory curation, long-run supervisor and artifact handoff exist as capabilities, not mandatory stages.
 
-Main must choose FAST、STANDARD or HIGH_RISK automatically. A generic runtime preference against proactive sub-agents is satisfied by this explicit project instruction: when STANDARD/HIGH_RISK criteria below justify delegation, Main may and should use the minimum useful agents without waiting for the user to request a team. A higher-level system/developer prohibition still wins and requires single-agent fallback.
+Main must choose FAST、STANDARD or HIGH_RISK automatically. Applicable project/skill instructions can request Codex delegation; this workflow does so when the delegation gate below is met. A higher-level system/developer prohibition still wins and requires single-agent fallback.
 
 ## 2. FAST
 
@@ -22,17 +22,19 @@ Default: Main works directly. No team, ledger, freeze, curator or artifact bundl
 Use for ordinary cross-file implementation, debugging and design.
 
 ```text
-route context -> trace real path -> concise acceptance
+route context -> delegation gate -> trace real path -> concise acceptance
 -> smallest end-to-end implementation -> claim-matched evidence -> integrate
 ```
 
-Use 0–3 agents only when they add independent value. Delegation is automatic when there are independent workstreams, specialist context or a material need for independent review; otherwise Main stays direct. P2P may carry technical findings directly; a disk-backed contract is not required for ordinary ephemeral tasks.
+Before deep work, Main must test four delegation triggers: independent lanes、specialist context、material independent review/QA value、or material speed/context-pollution benefit from parallel work. If any trigger is true and sub-agents are available, spawn the minimum useful 1–3 agents immediately; do not wait for the user to say “team” and do not first complete the delegated research yourself. P2P may carry technical findings directly. A disk-backed contract is not required for ordinary ephemeral tasks.
+
+A non-FAST task may remain single-agent only with a concrete `NO_DELEGATION_REASON`: no independent value、tightly coupled cheaper direct work、or a higher-level/runtime restriction. Re-evaluate after scope expansion or discovery of a new lane.
 
 ## 4. HIGH_RISK
 
 This is an automatically detected authorization/risk overlay for destructive operations, external writes, hardware actions, material cross-subsystem redesign, hard-to-reverse data changes, or an unapproved expensive run.
 
-Main first states scope, cost/resources, stop condition and rollback, then waits for Owner approval before side effects. Read-only planning or research may be delegated before approval. Complexity alone does not make work HIGH_RISK.
+Main first states scope, cost/resources, stop condition and rollback, then waits for Owner approval before side effects. Safe read-only planning, code tracing, source verification or risk review must still pass the delegation gate and may start before approval. Complexity alone does not make work HIGH_RISK.
 
 ## 5. Facility trigger matrix
 

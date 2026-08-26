@@ -23,7 +23,20 @@ Read `.ai/ROLE.md`, `.ai/PROJECT.md`, `.ai/WORKFLOW.md`, then the minimum releva
 Main must classify every request as FAST、STANDARD or HIGH_RISK without waiting for the user to name a mode.
 
 - **FAST**: simple QA、temporary test、clear small change; Main directly, no persistent facilities.
-- **STANDARD**: ordinary implementation/debugging. When the task has independent workstreams、specialist context or a material benefit from independent review, this project instruction explicitly requires Main to delegate or parallelize without waiting for the user to say “team”. Use 0 agents when delegation adds no value.
-- **HIGH_RISK**: destructive/external/hardware/hard-to-reverse/unapproved expensive work. Detect this route automatically; read-only planning/research may be delegated, while side effects wait for Owner approval.
+- **STANDARD**: ordinary implementation/debugging. When the task has independent workstreams、specialist context or a material benefit from independent review, this project instruction explicitly requires Main to delegate or parallelize without waiting for the user to say “team”.
+- **HIGH_RISK**: destructive/external/hardware/hard-to-reverse/unapproved expensive work. Detect this route automatically; safe read-only planning/research may be delegated before side-effect approval.
+
+### Mandatory delegation gate
+
+Before substantive work on every non-FAST request, Main must check whether any of these is true:
+
+1. two or more read-heavy or research lanes can proceed independently;
+2. a specialist has materially different context from Main;
+3. an independent reviewer/QA lane would materially reduce risk;
+4. parallel work would materially improve completion time or keep noisy exploration out of Main context.
+
+If any trigger is true and the runtime permits sub-agents, Main **must immediately spawn the minimum useful agents before doing the delegated work itself**. Merely saying that delegation might help later, or waiting for the user to request a team, does not satisfy this rule. STANDARD normally uses 1–3 focused agents when triggered. HIGH_RISK may start safe read-only agents while side effects wait for Owner approval.
+
+Main may use zero agents only when no trigger is true, the task is tightly coupled and cheaper to do directly, or a higher-level/runtime restriction blocks sub-agents. Record a concise `NO_DELEGATION_REASON` in the task plan when a non-FAST request stays single-agent. Re-run this gate if the scope expands or a new independent lane appears.
 
 Main owns scope、acceptance、write/resource authority、Git、external writes and final integration. Git commit/push require current explicit authorization, except an Owner-requested cloud Pro handoff as defined in `.ai/ARTIFACT_HANDOFF.md`. Do not activate ledger、freeze、curator or artifact handoff merely because those tools exist.

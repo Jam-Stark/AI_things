@@ -1,80 +1,35 @@
-# Jam Coding Role v1.3.1 — Verification
+# Jam Coding Role v1.3.2 — Verification
 
-## Pro full-delivery addendum
-
-```text
-Concise five-item Owner response contract                  PASS
-Detailed pro_delivery__full_review.zip contract            PASS
-FULL_REVIEW.md / LOCAL_WORKER_PARSE_PROMPT.md contents     PASS
-Copy-ready Worker prompt includes source lock/local limits PASS
-Worker/Pro same-folder prefix design                       PASS
-Prompt helper lists Worker ZIPs only                       PASS
-Historical unprefixed Worker ZIP fallback                  PASS
-Existing Pro ZIP excluded from Worker input list           PASS
-Stage packer emits worker_delivery__ ZIPs and sidecars      PASS
-95 MiB remains final compressed ZIP limit                  PASS
-Python syntax compilation                                  PASS
-```
-
-The addendum keeps `VERSION=1.3.1` and does not change route authority、Git publish verification、Codex hooks/P2P、team-state、memory、long-run、OMO、Claude or Pro_Space authorization.
-
-## Original v1.3.1 delta
+## v1.3.2 delta
 
 ```text
-Prompt generated from pushed branch/commit                 PASS
-Repository URL、branch、full SHA and ZIP names present      PASS
-Review type and Owner request auto-fill                     PASS
-Missing review type leaves explicit Owner placeholder       PASS
-Tracked dirty state rejected                                PASS
-Local commit not present on remote-tracking branch rejected PASS
-Compressed ZIP larger than 95 MiB rejected                  PASS
-AGENTS automatic delegation project instruction present     PASS
-PROJECT command registry present                            PASS
-ARTIFACT_HANDOFF says compressed size, not raw size         PASS
-Python syntax compilation                                   PASS
-```
-
-## Preserved v1.3.0 repository verification
-
-```text
+Mandatory delegation gate in AGENTS                     PASS
+STANDARD/HIGH_RISK proactive spawn wording              PASS
+Non-FAST NO_DELEGATION_REASON requirement               PASS
+Codex TEAM runtime-specific proactive gate              PASS
+Cloud Pro prompt uses Owner chat transfer               PASS
+Prompt does not require Pro Drive upload                PASS
+Local Worker prompt says not to search Drive            PASS
+Project-configured Pro review destination               PASS
+Path traversal in Pro document root rejected            PASS
+Published branch/commit prompt fields                   PASS
+Worker ZIP list and 95 MiB compressed limit             PASS
 Python syntax compilation                               PASS
-JSON / JSONC parse                                      PASS
-TOML parse                                              PASS
-Bundled unit tests                                      13 / 13 PASS
-Minimal bootstrap creates no MEMORY.md or team state    PASS
-Full optional bootstrap remains lazy-loaded             PASS
-OpenCode optional docs are not globally preloaded       PASS
-Standalone Claude Agent capability is denied            PASS
-OMO Team Mode appears only with explicit flag           PASS
-Coordination tooling defaults to inactive               PASS
-Adaptive ephemeral Codex spawn remains allowed          PASS
-Strict writer contract and exclusive lease checks       PASS
-Candidate freeze requires formal review/QA purpose      PASS
-Memory inbox is created only by a durable candidate      PASS
-Long-run receipt works without activating team ledger   PASS
-Artifact bundle requires explicit stage handoff          PASS
-Checkpoint default exclusion and sensitive-name scan    PASS
-PreToolUse no-op success emits no stdout                 PASS
-PreToolUse deny omits unsupported `continue`             PASS
-Malformed strict hook input fails closed                 PASS
-Repo-local hooks resolve scripts from Git root            PASS
-PostToolUse persistence is metadata-only                 PASS
-SessionStart pending events deliver/archive once         PASS
-95 MiB semantic standard-ZIP splitting                   PASS
-Oversized checkpoint is not binary-sliced                PASS
+```
+
+## Preserved behavior
+
+```text
+FAST remains Main-direct                                PASS BY STATIC REVIEW
+Persistent team facilities remain trigger-driven        PASS BY STATIC REVIEW
+Git publish verification remains required               PASS
+Codex hook/P2P implementation unchanged                 PASS BY DIFF BOUNDARY
+Team-state/lease/freeze implementation unchanged        PASS BY DIFF BOUNDARY
+Memory/long-run/OMO/Claude unchanged                    PASS BY DIFF BOUNDARY
+Worker semantic ZIP implementation unchanged            PASS BY DIFF BOUNDARY
+Pro_Space Worker artifact target unchanged              PASS BY DIFF BOUNDARY
 ```
 
 ## Evidence boundary
 
-The checks establish package structure, helper behavior and synthetic local workflows. They do not establish:
-
-```text
-real production repository migration                    NOT RUN BY GENERIC PACK
-real Codex MultiAgentV2 P2P session                     NOT RUN
-real OMO Team Mode session                              NOT RUN
-real tmux/GPU/IsaacLab training                         NOT RUN
-Google Drive upload                                     NOT RUN
-robot hardware action                                   NOT RUN
-```
-
-Project migrations must separately verify protected paths, local Git authorization, actual runtime evidence and any project-specific overlay.
+These checks establish prompt/helper behavior and static routing rules. They do not prove that every future Main session will delegate optimally, nor do they establish real production upload, IsaacLab, GPU, training, evaluation or hardware behavior.

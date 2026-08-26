@@ -60,5 +60,8 @@ Record exclusive resources, external-write rules, long-run system and hardware s
 - Git remote used by cloud reviewer:
 - Branch or review branch:
 - Whether Owner request authorizes in-scope commit+push: yes/no
-- Drive release root/path:
+- Drive task folder for Worker artifacts:
+- Pro delivery transfer: Owner uploads `pro_delivery__full_review.zip` in the local Worker conversation; the cloud Pro does not upload it to Drive.
+- Pro review document root: `docs/pro-reviews`
+- Placement rule: `<Pro review document root>/<stage-or-release>/<commit-short>/`
 - Local AI decisions reserved from cloud gate-setting:

@@ -1,4 +1,4 @@
-version = 4
+version = 5
 output_dir = ".ai/outgoing-artifacts"
 
 [activation]
@@ -42,12 +42,12 @@ index_filename = "worker_delivery__BUNDLE_INDEX.md"
 split_volume_archives = false
 
 [naming]
-# Worker artifacts and the cloud Pro answer share one immutable task folder.
 worker_prefix = "worker_delivery__"
-pro_prefix = "pro_delivery__"
+# The Pro package is a conversation attachment transferred by Owner, not a Drive upload.
 pro_full_review_zip = "pro_delivery__full_review.zip"
 
 [upload]
+# Upload applies only to Worker stage artifacts.
 backend = "capability-router"
 standing_authorization = "create-only-stage-artifacts"
 root_folder_id = "1JWQrkkOrItsKlFUjfxsadUrOcXChGpOf"
@@ -60,3 +60,5 @@ git_remote = "origin"
 prompt_filename = "PRO_REVIEW_PROMPT.md"
 full_review_filename = "FULL_REVIEW.md"
 worker_parse_prompt_filename = "LOCAL_WORKER_PARSE_PROMPT.md"
+delivery_mode = "owner-chat-transfer"
+local_review_root = "docs/pro-reviews"

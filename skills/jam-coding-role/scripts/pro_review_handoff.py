@@ -5,13 +5,20 @@ from __future__ import annotations
 import argparse
 import re
 import subprocess
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+
+try:
+    import tomllib
+except ModuleNotFoundError as exc:  # pragma: no cover
+    raise SystemExit("Python 3.11+ is required") from exc
 
 MIB = 1024 * 1024
 MAX_ZIP_BYTES = 95 * MIB
 WORKER_PREFIX = "worker_delivery__"
 PRO_PREFIX = "pro_delivery__"
 PRO_DELIVERY_ZIP = "pro_delivery__full_review.zip"
+DEFAULT_CONFIG = Path(".ai/artifact-sync.toml")
+DEFAULT_PRO_DOC_ROOT = "docs/pro-reviews"
 OWNER_PLACEHOLDER = "[OWNER: 请填写诊断问题/阶段验收/事实核查/QA等需求类型]"
 REQUEST_PLACEHOLDER = "[OWNER: 请填写本轮具体问题、前置回答要求和验收范围]"
 
@@ -65,7 +72,6 @@ def worker_archives(release: Path) -> list[Path]:
     preferred = [path for path in archives if path.name.startswith(WORKER_PREFIX)]
     if preferred:
         return preferred
-    # Backward compatibility for releases created before the delivery-role prefixes.
     return [path for path in archives if not path.name.startswith(PRO_PREFIX)]
 
 
@@ -84,6 +90,24 @@ def zip_lines(release: Path) -> list[str]:
     return lines
 
 
+def load_pro_doc_root(root: Path, config: Path, explicit: str | None) -> str:
+    if explicit and explicit.strip():
+        value = explicit.strip()
+    else:
+        path = config if config.is_absolute() else root / config
+        value = DEFAULT_PRO_DOC_ROOT
+        if path.is_file():
+            with path.open("rb") as handle:
+                data = tomllib.load(handle)
+            configured = data.get("pro_review", {}).get("local_review_root")
+            if isinstance(configured, str) and configured.strip():
+                value = configured.strip()
+    pure = PurePosixPath(value)
+    if pure.is_absolute() or ".." in pure.parts or value in {"", "."}:
+        raise SystemExit("Pro review document root must be a non-empty repository-relative path without '..'")
+    return pure.as_posix().rstrip("/")
+
+
 def local_worker_parse_prompt(
     *,
     repo_url: str,
@@ -91,14 +115,16 @@ def local_worker_parse_prompt(
     commit: str,
     drive_location: str,
     pro_delivery_zip: str,
+    pro_doc_destination: str,
 ) -> str:
-    return f"""请解析本轮 Cloud Pro 全量交付：
+    return f"""请解析 Owner 在当前本地 Worker 对话中上传的 Cloud Pro 全量交付包 `{pro_delivery_zip}`：
 
-1. 从 Google Drive 同一任务目录 `{drive_location}` 下载 `{pro_delivery_zip}`，解压并阅读 `FULL_REVIEW.md`；同时读取包内 `LOCAL_WORKER_PARSE_PROMPT.md`，确认内容与本 prompt 一致。
-2. 以云端审阅 source lock：`{repo_url}` / branch `{branch}` / commit `{commit}`。不要因此 reset、stash、discard 或覆盖本地较新的工作；先比较本地 HEAD、实际 diff 和当前生产环境。
-3. 将 Cloud Pro 结论分为：远程代码/交付包直接支持的事实、推断、未知项、必须由本地 IsaacLab/GPU/log/hardware 验证的事项。云端建议的科学 gate、阈值和资源要求不得自动升级为本地硬门槛。
-4. 结合本地 `.ai/PROJECT.md` command registry、当前 memory、resolved config、真实日志和资源状态，审查可执行性；保留有价值的 insights/novelty，修正不适合生产环境的 gate、命令和验收标准。
-5. 输出：本地核验结果、采用/修改/拒绝的建议及理由、最小下一步方案、所需命令与证据、仍需 Owner 决定的事项。没有本地证据时明确写 `NOT_RUN` 或 `INCONCLUSIVE`。"""
+1. 该 Pro ZIP 由 Owner 从 Cloud Pro 对话转交；不要去 Google Drive 寻找 Pro 交付包。Google Drive `{drive_location}` 只保存本轮 Worker 输入 artifacts。
+2. 在当前项目中创建 `{pro_doc_destination}`，把原始 `{pro_delivery_zip}` 保存在该目录，并将 `FULL_REVIEW.md` 和 `LOCAL_WORKER_PARSE_PROMPT.md` 解压到同一目录。确认包内 prompt 与本 prompt 的 source lock 和处理要求一致。
+3. 云端审阅 source lock：`{repo_url}` / branch `{branch}` / commit `{commit}`。不要因此 reset、stash、discard 或覆盖本地较新的工作；先比较本地 HEAD、实际 diff 和当前生产环境。
+4. 将 Cloud Pro 结论分为：远程代码/Worker 交付包直接支持的事实、推断、未知项、必须由本地 IsaacLab/GPU/log/hardware 验证的事项。云端建议的科学 gate、阈值和资源要求不得自动升级为本地硬门槛。
+5. 结合本地 `.ai/PROJECT.md` command registry、当前 memory、resolved config、真实日志和资源状态，审查可执行性；保留有价值的 insights/novelty，修正不适合生产环境的 gate、命令和验收标准。
+6. 输出：本地核验结果、采用/修改/拒绝的建议及理由、最小下一步方案、所需命令与证据、仍需 Owner 决定的事项。没有本地证据时明确写 `NOT_RUN` 或 `INCONCLUSIVE`。"""
 
 
 def render(
@@ -112,6 +138,7 @@ def render(
     review_type: str | None,
     owner_request: str | None,
     pro_delivery_zip: str,
+    pro_doc_destination: str,
 ) -> str:
     worker_prompt = local_worker_parse_prompt(
         repo_url=repo_url,
@@ -119,6 +146,7 @@ def render(
         commit=commit,
         drive_location=drive_location,
         pro_delivery_zip=pro_delivery_zip,
+        pro_doc_destination=pro_doc_destination,
     )
     replacements = {
         "{{REPO_URL}}": repo_url,
@@ -130,6 +158,7 @@ def render(
         "{{REVIEW_TYPE}}": review_type.strip() if review_type and review_type.strip() else OWNER_PLACEHOLDER,
         "{{OWNER_REQUEST}}": owner_request.strip() if owner_request and owner_request.strip() else REQUEST_PLACEHOLDER,
         "{{PRO_DELIVERY_ZIP}}": pro_delivery_zip,
+        "{{PRO_DOC_DESTINATION}}": pro_doc_destination,
         "{{LOCAL_WORKER_PARSE_PROMPT}}": worker_prompt,
     }
     for key, value in replacements.items():
@@ -148,6 +177,8 @@ def parser() -> argparse.ArgumentParser:
     root.add_argument("--branch")
     root.add_argument("--template", type=Path)
     root.add_argument("--output", type=Path)
+    root.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
+    root.add_argument("--pro-doc-root")
     root.add_argument("--pro-delivery-zip", default=PRO_DELIVERY_ZIP)
     return root
 
@@ -161,6 +192,8 @@ def main() -> int:
     if Path(args.pro_delivery_zip).name != args.pro_delivery_zip or not args.pro_delivery_zip.startswith(PRO_PREFIX) or not args.pro_delivery_zip.endswith('.zip'):
         raise SystemExit("--pro-delivery-zip must be a simple pro_delivery__*.zip filename")
     repo_url, branch, commit = verify_git_publish(root, args.remote, args.branch)
+    local_root = load_pro_doc_root(root, args.config, args.pro_doc_root)
+    pro_doc_destination = f"{local_root}/{release.name}/{commit[:12]}"
     template_path = args.template
     if template_path is None:
         installed = root / ".ai/PRO_REVIEW_PROMPT.md"
@@ -182,6 +215,7 @@ def main() -> int:
             review_type=args.review_type,
             owner_request=args.owner_request,
             pro_delivery_zip=args.pro_delivery_zip,
+            pro_doc_destination=pro_doc_destination,
         ),
         encoding="utf-8",
     )
