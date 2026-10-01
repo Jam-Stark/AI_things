@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Safely bootstrap, refresh, or audit Jam Coding Role v1.3.0.
+"""Safely bootstrap, refresh, or audit Jam Coding Role v1.5.0.
 
 The default install is deliberately lean. Persistent coordination, long-run
 continuity, stage planning, artifact handoff, runtime adapters, and a project
@@ -135,6 +135,19 @@ def specs(
                 ),
             }
         )
+
+    # JAM-V150-ASSETS: new installs get bounded models, hooks and local guards.
+    # refresh intentionally preserves existing un-managed configs; run the reviewed
+    # migration kit for a pre-v1.5 target rather than silently replacing its config.
+    if "codex" in runtimes:
+        base = ROOT / "v150-assets"
+        for src in sorted(base.rglob("*")):
+            if src.is_file() and "__pycache__" not in src.parts and src.suffix != ".pyc":
+                dest = src.relative_to(base)
+                managed = dest.as_posix().startswith(".ai/") and dest.suffix == ".md"
+                files[dest] = (src, managed)
+        # Preserve the existing optional-coordination validator underneath the gate.
+        files[Path(".ai/scripts/codex_team_hook.py")] = (ROOT / "scripts/codex_team_hook.py", False)
 
     if "codex" in runtimes:
         files[Path(".codex/AGENTS.md")] = (ROOT / "templates/CODEX_AGENTS.md", False)
@@ -405,12 +418,22 @@ def audit(
     if profile == "scientific" and not (target / ".ai/SCIENTIFIC_ENGINEERING.md").exists():
         issues.append("scientific profile missing .ai/SCIENTIFIC_ENGINEERING.md")
 
+    if "codex" in runtimes:
+        import subprocess
+        checker = target / ".ai/scripts/codex_preflight.py"
+        if checker.exists():
+            probe = subprocess.run([sys.executable, str(checker), "--root", str(target)], capture_output=True, text=True, timeout=15)
+            if probe.returncode:
+                issues.append("v1.5.0 model/communication guard audit failed: " + probe.stdout[-4000:])
+        else:
+            issues.append("missing v1.5.0 codex_preflight.py")
+
     if issues:
         for issue in issues:
             print(f"FAIL: {issue}")
         return 1
 
-    print("PASS: requested v1.3 core, adapters, and optional facilities match this pack.")
+    print("PASS: requested v1.5 core, adapters, and optional facilities match this pack.")
     print("PASS: optional workflow documents remain lazy-routed rather than globally preloaded.")
     project = target / ".ai/PROJECT.md"
     if project.exists() and "Complete this file" in project.read_text(encoding="utf-8"):

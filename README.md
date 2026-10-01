@@ -77,7 +77,7 @@ python ~/workspace/AI_things/skills/jam-coding-role/scripts/bootstrap.py audit \
 
 `init` 不覆盖现有文件；`refresh` 只更新带 managed marker 的通用 core，不覆盖 project overlay、memory、root entrypoint 或 runtime adapter。成熟项目迁移前先阅读 `skills/jam-coding-role/examples/` 中的对应方案。
 
-## Jam Coding Role v1.3.0 更新重点
+## Jam Coding Role v1.3.0 历史更新重点
 
 - 普通 QA、临时实现和明确小改动继续走轻量 FAST / STANDARD 路径；
 - persistent team ledger、disk contract、lease 和 candidate freeze 只按需启用；
@@ -130,3 +130,9 @@ git push
 - `revise-paper` 来源于 `CISLab-HKUST/revise-paper`，采用 CC BY-NC-SA 4.0；使用时需要完整 LaTeX 工程，并建议安装 `latexmk` 与 PDF 页面渲染工具。
 - `tensor-formula-viz` 来源于 `wdkns/wdkns-skills` 的 `skills/tensor-formula-viz`；默认使用可编辑 TikZ，中文图建议使用 XeLaTeX 和 Fandol 字体集。
 - `zotero-zotmoov` 的设备路径通过 `ZOTERO_DATA_DIR`、`ZOTERO_PROFILE_DIR`、`ZOTERO_DB` 和 `PAPERS_DIR` 配置。
+
+## Coding Role v1.5.0
+
+`skills/jam-coding-role` 的 Codex runtime 默认 Sol/medium、子任务上限 5，检索与机械任务使用 Luna，唯一 Astra/medium 子角色。Main model/effort 属于 App，迁移保留已有 Main context/compact；新增有界会话交接和工具归属回收。新项目由 bootstrap 的 v150-assets 安装；已有项目用审阅后的迁移包升级配置。OMO 与 standalone Claude 的既有适配器不被 Codex 模型配置替换。具体见 skill README 与 references。
+
+本地 v1.5.0 修正与实际验证边界见 `skills/jam-coding-role/VERIFICATION.md`；配置可解析不等于实际 App 行为已验收。

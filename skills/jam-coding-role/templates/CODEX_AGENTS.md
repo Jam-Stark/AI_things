@@ -1,9 +1,7 @@
-# `.codex` adapter
+# Codex adapter v1.5.0
 
-Root `../AGENTS.md` is canonical. Read `.codex/TEAM.md` only for role routing、P2P、parallelism or optional persistent coordination.
+Follow root AGENTS.md. Read .codex/TEAM.md and .ai/MODEL_ROUTING.md before delegation. Main model/effort belong to the App. Project context/compact settings are preserved during migration.
 
-FAST work does not require a team. Ordinary STANDARD spawns use concise prompt contracts and do not require disk-backed task state.
+Codex delegation uses the small quota ledger before spawn; full coordination remains conditional. SessionStart/PostCompact retain pending events until explicitly resolved; notification is not acceptance. Review changed hooks through /hooks.
 
-Project models、effort、concurrency and role definitions remain in `.codex/config.toml` and `.codex/agents/*.toml`; this pack does not own them.
-
-Optional hooks are permissive while coordination is inactive and validate only managed tasks when active. `PreToolUse` no-op success must emit no stdout; deny must use the event-specific permission decision without `continue`. All repo-local hook commands resolve from the Git root. Strict parsing/root/validator failures fail closed. `PostToolUse` stores metadata only, and `SessionStart` consumes pending events once before archiving them. Review changed hook definitions with `/hooks`.
+For a host that loads hooks only from the primary checkout, .ai/scripts/install_codex_hooks.py can register worktree-scoped user hooks. Use only when the actual host requires it; it preserves unrelated hooks and does not change trust.

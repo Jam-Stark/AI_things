@@ -1,0 +1,51 @@
+{
+  "description": "Jam v1.5.0: atomic child quota; preserve legacy coordination/continuity; no Stop loop.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.ai/scripts/codex_v150_hook.py\" pre",
+            "timeout": 20
+          }
+        ],
+        "matcher": "(^|.*\\.)(spawn_agent|resume_agent|close_agent)$"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.ai/scripts/codex_v150_hook.py\" post",
+            "timeout": 20
+          }
+        ],
+        "matcher": "(^|.*\\.)(spawn_agent|resume_agent|close_agent|send_message|followup_task|interrupt_agent)$"
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.ai/scripts/codex_v150_hook.py\" session-start",
+            "timeout": 20
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.ai/scripts/codex_v150_hook.py\" post-compact",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
+  }
+}

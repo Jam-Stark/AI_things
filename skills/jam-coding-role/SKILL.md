@@ -3,14 +3,14 @@ name: jam-coding-role
 description: Bootstrap, migrate, audit, or evolve a lean project AI coding role. Use for project-level Codex/OpenCode/OMO/Claude routing, optional multi-agent coordination, file-based memory, long-running scientific work, or artifact handoff.
 ---
 
-# Jam Coding Role v1.3.0
+# Jam Coding Role v1.5.0
 
 This skill provides a portable behavior kernel with **lean defaults and on-demand control facilities**.
 
 ## Core design
 
 - FAST / STANDARD / HIGH_RISK route selection;
-- no mandatory team, ledger, disk contract, reviewer wave, memory curator, or artifact step for ordinary work;
+- no mandatory team, full coordination ledger, disk contract, reviewer wave, memory curator, or artifact step for ordinary work; Codex child allocation uses its small persistent quota ledger;
 - Codex MultiAgentV2 P2P remains available without persistent coordination state;
 - ledger, lease, candidate freeze and verdict dependency activate only for real multi-writer/resource/cross-session/formal-review needs;
 - memory governance is proactive but candidate-triggered;
@@ -33,15 +33,23 @@ This skill provides a portable behavior kernel with **lean defaults and on-deman
 - `scripts/bootstrap.py`: safe init/refresh/audit;
 - optional helpers under `scripts/`.
 
+## Codex v1.5.0 resources
+
+- `references/MODEL_ROUTING.md`: Sol/medium default, Luna retrieval, sole Astra/medium adviser, five-child ceiling.
+- `references/SESSION_PROTOCOL.md`: bounded authorized Main-to-Main handoffs.
+- `references/CONTEXT_POLICY.md`: preserve explicit Main budgets and model-aware child context.
+- `references/TOOL_LIFECYCLE.md`: opt-in owned temporary process cleanup.
+- `scripts/migrate_v150.py`: preview/apply an existing project migration with file backups; no automatic Git writes.
+
 ## Codex hook contract
 
-When coordination hooks are installed:
+Codex installs quota/continuity hooks; full coordination remains optional:
 
 - `PreToolUse` no-op success exits `0` without stdout; deny uses only the event-specific permission decision and never returns `continue`;
 - `PostToolUse` and `SessionStart` may use their supported common output fields;
 - repository-local commands resolve scripts from `$(git rev-parse --show-toplevel)`;
 - malformed strict-policy input fails closed;
-- PostToolUse persistence is metadata-only, and pending SessionStart events are delivered once then archived.
+- PostToolUse persistence is metadata-only, and SessionStart/PostCompact report durable pointers without deleting or acknowledging pending events.
 
 The implementation details and verification evidence are recorded in `UPDATE_LOG.md`.
 
@@ -79,3 +87,5 @@ Add facilities only when needed:
 ## Migration principle
 
 A migration script must not stage or commit by default. Git writes require current explicit Owner authorization and must be surfaced as opt-in flags. External upload is also explicit; never hide it in a session-end hook.
+
+Existing project: `python3 scripts/migrate_v150.py --root /path/to/project` previews; add `--apply` to write with backup. Init/refresh do not silently replace existing project-owned config. No runtime smoke or Git commit/push is automatic.

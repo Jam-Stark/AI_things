@@ -1,4 +1,7 @@
-# Jam Coding Role v1.3.0 — Adaptive Coordination
+# Jam Coding Role v1.5.0 — Adaptive Coordination
+
+当前本地版本为 v1.5.0：默认 Sol/medium、子任务上限 5、迁移保留 Main context/compact。v1.3.0 内容仅为历史，不代表当前 hooks 行为；当前 SessionStart/PostCompact 不自动归档未处理事件。
+
 
 > Release lineage: `AI_things/main` previously carried v1.0.0. v1.1.0 and v1.2.0 were reviewed delivery candidates but were not the published repository version. v1.3.0 is the consolidated repository release that incorporates the approved runtime, language, stage-decision, artifact, P2P, team-state, memory and lean-routing changes.
 
@@ -53,3 +56,7 @@ v1.3.0 keeps the portable behavior kernel and advanced coordination capabilities
 ## Git behavior
 
 The migration tool defaults to no commits. A checkpoint commit and migration commit are created only when the caller supplies explicit flags under current Owner authorization. The tool never pushes.
+
+## v1.5.0 — 2026-09-23
+
+Main/App model ownership; preserved explicit Main context budgets; five-child ceiling; GPT-6 Sol/medium default and Luna/Sol roles; one Astra/medium child identity per team; model-gated notes/compact; bounded Main-to-Main outbox; opt-in Linux owned-tool cleanup. No Jev integration. New Codex bootstrap installs v150-assets; refresh does not silently overwrite old project configs. Existing targets use the reviewed migration kit. Native hooks/transport/model switching require local effective-runtime acceptance. Legacy long-run, artifact, memory and coordination scripts are preserved, not rewritten.
