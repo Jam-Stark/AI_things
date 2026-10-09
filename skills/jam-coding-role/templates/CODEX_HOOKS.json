@@ -1,28 +1,28 @@
 {
-  "description": "Optional Jam Coding Role v1.3 coordination hooks.",
+  "description": "Jam v1.6.0: stage grants, role capabilities, owned lifecycle and durable-run continuity.",
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "^spawn_agent$",
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$(git rev-parse --show-toplevel)/.ai/scripts/codex_team_hook.py\" pre",
-            "timeout": 5
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.ai/scripts/codex_v160_hook.py\" pre",
+            "timeout": 20
           }
-        ]
+        ],
+        "matcher": "^(?:(?:agents|collaboration|functions\\.collaboration)\\.)?(spawn_agent|resume_agent|close_agent|send_message|followup_task|interrupt_agent|list_agents)$"
       }
     ],
     "PostToolUse": [
       {
-        "matcher": "^(spawn_agent|send_message|followup_task|interrupt_agent)$",
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$(git rev-parse --show-toplevel)/.ai/scripts/codex_team_hook.py\" post",
-            "timeout": 5
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.ai/scripts/codex_v160_hook.py\" post",
+            "timeout": 20
           }
-        ]
+        ],
+        "matcher": "^(?:(?:agents|collaboration|functions\\.collaboration)\\.)?(spawn_agent|resume_agent|close_agent|send_message|followup_task|interrupt_agent|list_agents)$"
       }
     ],
     "SessionStart": [
@@ -30,8 +30,19 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$(git rev-parse --show-toplevel)/.ai/scripts/codex_team_hook.py\" session-start",
-            "timeout": 5
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.ai/scripts/codex_v160_hook.py\" session-start",
+            "timeout": 20
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.ai/scripts/codex_v160_hook.py\" post-compact",
+            "timeout": 20
           }
         ]
       }

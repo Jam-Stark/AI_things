@@ -1,0 +1,163 @@
+# Generated Jam Coding Role v1.6.0.
+"background_terminal_max_timeout" = 86400000
+
+["features"]
+"hooks" = true
+
+["agents"]
+"enabled" = true
+"max_concurrent_threads_per_session" = 5
+"default_subagent_model" = "gpt-6.1-sol"
+"default_subagent_reasoning_effort" = "medium"
+
+["agents"."default__low"]
+"description" = "Default focused child; clarify or analyze a bounded question without writes. [low; same default scope]"
+"config_file" = "agents/default--low.toml"
+
+["agents"."default"]
+"description" = "Default focused child; clarify or analyze a bounded question without writes. [medium; same default scope]"
+"config_file" = "agents/default.toml"
+
+["agents"."default__high"]
+"description" = "Default focused child; clarify or analyze a bounded question without writes. [high; same default scope]"
+"config_file" = "agents/default--high.toml"
+
+["agents"."default__xhigh"]
+"description" = "Default focused child; clarify or analyze a bounded question without writes. [xhigh; same default scope]"
+"config_file" = "agents/default--xhigh.toml"
+
+["agents"."default__max"]
+"description" = "Default focused child; clarify or analyze a bounded question without writes. [max; same default scope]"
+"config_file" = "agents/default--max.toml"
+
+["agents"."explorer"]
+"description" = "Explore one tightly scoped source or dependency question. [high; same explorer scope]"
+"config_file" = "agents/explorer.toml"
+
+["agents"."context_researcher__low"]
+"description" = "Integrate evidence across the assigned files, dependencies and resolved configuration; read-only, no redesign. [low; same context_researcher scope]"
+"config_file" = "agents/context-researcher--low.toml"
+
+["agents"."context_researcher"]
+"description" = "Integrate evidence across the assigned files, dependencies and resolved configuration; read-only, no redesign. [medium; same context_researcher scope]"
+"config_file" = "agents/context-researcher.toml"
+
+["agents"."context_researcher__high"]
+"description" = "Integrate evidence across the assigned files, dependencies and resolved configuration; read-only, no redesign. [high; same context_researcher scope]"
+"config_file" = "agents/context-researcher--high.toml"
+
+["agents"."context_researcher__xhigh"]
+"description" = "Integrate evidence across the assigned files, dependencies and resolved configuration; read-only, no redesign. [xhigh; same context_researcher scope]"
+"config_file" = "agents/context-researcher--xhigh.toml"
+
+["agents"."context_researcher__max"]
+"description" = "Integrate evidence across the assigned files, dependencies and resolved configuration; read-only, no redesign. [max; same context_researcher scope]"
+"config_file" = "agents/context-researcher--max.toml"
+
+["agents"."memory_curator"]
+"description" = "Integrate one validated reusable memory delta into its canonical home. [medium; same memory_curator scope]"
+"config_file" = "agents/memory-curator.toml"
+
+["agents"."runtime_qa"]
+"description" = "Execute and interpret one assigned proof, reproduction or authorized run. [high; same runtime_qa scope]"
+"config_file" = "agents/runtime-qa.toml"
+
+["agents"."worker__low"]
+"description" = "Implement ordinary bounded code/config changes, not semantic redesign. [low; same worker scope]"
+"config_file" = "agents/worker--low.toml"
+
+["agents"."worker"]
+"description" = "Implement ordinary bounded code/config changes, not semantic redesign. [medium; same worker scope]"
+"config_file" = "agents/worker.toml"
+
+["agents"."worker__high"]
+"description" = "Implement ordinary bounded code/config changes, not semantic redesign. [high; same worker scope]"
+"config_file" = "agents/worker--high.toml"
+
+["agents"."worker__xhigh"]
+"description" = "Implement ordinary bounded code/config changes, not semantic redesign. [xhigh; same worker scope]"
+"config_file" = "agents/worker--xhigh.toml"
+
+["agents"."worker__max"]
+"description" = "Implement ordinary bounded code/config changes, not semantic redesign. [max; same worker scope]"
+"config_file" = "agents/worker--max.toml"
+
+["agents"."scope_planner__low"]
+"description" = "Resolve one material scope, architecture or next-step ambiguity. [low; same scope_planner scope]"
+"config_file" = "agents/scope-planner--low.toml"
+
+["agents"."scope_planner__medium"]
+"description" = "Resolve one material scope, architecture or next-step ambiguity. [medium; same scope_planner scope]"
+"config_file" = "agents/scope-planner--medium.toml"
+
+["agents"."scope_planner"]
+"description" = "Resolve one material scope, architecture or next-step ambiguity. [high; same scope_planner scope]"
+"config_file" = "agents/scope-planner.toml"
+
+["agents"."scope_planner__xhigh"]
+"description" = "Resolve one material scope, architecture or next-step ambiguity. [xhigh; same scope_planner scope]"
+"config_file" = "agents/scope-planner--xhigh.toml"
+
+["agents"."scope_planner__max"]
+"description" = "Resolve one material scope, architecture or next-step ambiguity. [max; same scope_planner scope]"
+"config_file" = "agents/scope-planner--max.toml"
+
+["agents"."semantic_worker__low"]
+"description" = "Bounded semantic worker assignment; no unassigned authority. [low; same semantic_worker scope]"
+"config_file" = "agents/semantic-worker--low.toml"
+
+["agents"."semantic_worker__medium"]
+"description" = "Bounded semantic worker assignment; no unassigned authority. [medium; same semantic_worker scope]"
+"config_file" = "agents/semantic-worker--medium.toml"
+
+["agents"."semantic_worker"]
+"description" = "Bounded semantic worker assignment; no unassigned authority. [high; same semantic_worker scope]"
+"config_file" = "agents/semantic-worker.toml"
+
+["agents"."semantic_worker__xhigh"]
+"description" = "Bounded semantic worker assignment; no unassigned authority. [xhigh; same semantic_worker scope]"
+"config_file" = "agents/semantic-worker--xhigh.toml"
+
+["agents"."semantic_worker__max"]
+"description" = "Bounded semantic worker assignment; no unassigned authority. [max; same semantic_worker scope]"
+"config_file" = "agents/semantic-worker--max.toml"
+
+["agents"."code_reviewer__low"]
+"description" = "Review one concrete correctness concern in a changed execution path. [low; same code_reviewer scope]"
+"config_file" = "agents/code-reviewer--low.toml"
+
+["agents"."code_reviewer__medium"]
+"description" = "Review one concrete correctness concern in a changed execution path. [medium; same code_reviewer scope]"
+"config_file" = "agents/code-reviewer--medium.toml"
+
+["agents"."code_reviewer"]
+"description" = "Review one concrete correctness concern in a changed execution path. [high; same code_reviewer scope]"
+"config_file" = "agents/code-reviewer.toml"
+
+["agents"."code_reviewer__xhigh"]
+"description" = "Review one concrete correctness concern in a changed execution path. [xhigh; same code_reviewer scope]"
+"config_file" = "agents/code-reviewer--xhigh.toml"
+
+["agents"."code_reviewer__max"]
+"description" = "Review one concrete correctness concern in a changed execution path. [max; same code_reviewer scope]"
+"config_file" = "agents/code-reviewer--max.toml"
+
+["agents"."deep_researcher"]
+"description" = "Settle one difficult, decision-relevant question unresolved by normal source lookup. [medium; same deep_researcher scope]"
+"config_file" = "agents/deep-researcher.toml"
+
+["agents"."execution_lead"]
+"description" = "Execute an approved stage end to end, coordinate members and deliver integrated evidence. [high; same execution_lead scope]"
+"config_file" = "agents/execution-lead.toml"
+
+["agents"."execution_lead__xhigh"]
+"description" = "Execute an approved stage end to end, coordinate members and deliver integrated evidence. [xhigh; same execution_lead scope]"
+"config_file" = "agents/execution-lead--xhigh.toml"
+
+["agents"."execution_lead__max"]
+"description" = "Execute an approved stage end to end, coordinate members and deliver integrated evidence. [max; same execution_lead scope]"
+"config_file" = "agents/execution-lead--max.toml"
+
+["agents"."outside_view"]
+"description" = "Reframe a decision-relevant question independently from fresh context; read-only, no approval or control role. [xhigh; same outside_view scope]"
+"config_file" = "agents/outside-view.toml"

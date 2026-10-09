@@ -1,7 +1,7 @@
-# Codex adapter v1.5.0
+# Codex adapter v1.6.0
 
-Follow root AGENTS.md. Read .codex/TEAM.md and .ai/MODEL_ROUTING.md before delegation. Main model/effort belong to the App. Project context/compact settings are preserved during migration.
+遵循 root AGENTS.md 与 `.ai/ROLE.md`。委托时读 `.codex/TEAM.md`；完整阶段读 `.ai/EXECUTION_TEAM.md`。Main model/effort 归 App；项目保留已有 context/compact 设置。
 
-Codex delegation uses the small quota ledger before spawn; full coordination remains conditional. SessionStart/PostCompact retain pending events until explicitly resolved; notification is not acceptance. Review changed hooks through /hooks.
+角色生成器、运行时授权与 hook 共用单源 policy。只读配置不等于运行生效；新会话加载后再按真实结果判断。待处理事件与长任务收据保留，通知不等于决定或验收。
 
-For a host that loads hooks only from the primary checkout, .ai/scripts/install_codex_hooks.py can register worktree-scoped user hooks. Use only when the actual host requires it; it preserves unrelated hooks and does not change trust.
+本机 linked-worktree hooks 使用 `.ai/scripts/install_codex_hooks.py` 注册仅限目标工作树的用户入口；它保留无关 hooks，不修改 trust。按宿主 `/hooks` 审阅变化。长任务使用既有 supervisor 与持久等待，不建模型轮询循环。

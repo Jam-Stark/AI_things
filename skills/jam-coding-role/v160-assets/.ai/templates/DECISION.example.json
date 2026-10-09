@@ -1,0 +1,8 @@
+{
+  "decision_id": "one-stable-decision-id",
+  "plan_revision": "r1",
+  "source_ref": "/absolute/owner-or-planner-transcript.jsonl#L123",
+  "allowed_actions": [
+    "the explicitly approved action"
+  ]
+}

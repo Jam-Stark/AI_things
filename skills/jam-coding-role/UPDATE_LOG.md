@@ -1,6 +1,24 @@
-# Jam Coding Role v1.5.0 — Repository Update Log
+# v1.6.0 · 2026-10-09
 
-当前本地版本为 v1.5.0：默认 Sol/medium、子任务上限 5、迁移保留 Main context/compact。v1.3.0 内容仅为历史，不代表当前 hooks 行为；当前 SessionStart/PostCompact 不自动归档未处理事件。
+- execution lead 双入口与阶段授权；lead 可亲自组队，阶段内普通修复与已批迭代继续执行。
+- 角色能力单源生成；Outside view 独立上下文、只读建议。
+- Owner 交付原则完整落在 ROLE，精简重复入口与角色组织规则。
+- 修正“修改奖励就上报”为“超出已批准范围才上报”；清理 managed block 外冲突的 Main 独占组织权。
+- 阶段事件与实际传输分离，保留真实身份、共同额度、Astra 及未结束运行。
+- 实际证据与能力限制见 VERIFICATION；不把静态更新宣称为全功能运行通过。
+- 通用发布：默认使用 generic profile，清除私人路径/远程目标/站立上传授权；保留可选领域角色和安装项目自己的事实。
+- 通用 fresh init、预检、refresh 幂等性及无关设置保留通过；公开材料分离既有本机运行观察与跨宿主保证。
+
+# 历史记录（下列旧版检查不作为 v1.6.0 验收）
+
+## Jam Coding Role v1.5.1 — Repository Update Log
+
+## v1.5.1 — 2026-10-02
+
+GPT-6.1 Sol 五档静态角色；root Main 与 child 身份区分；生成策略贯穿角色、旧 hook、新 wrapper 与预检；普通团队控制验证实际归属；init/refresh/migration 共用生成路径。Main 配置、项目事实与既有配额/长跑状态保留。此项取代先前版本的当前说明；下文为历史。
+
+
+历史 v1.5.0：默认 Sol/medium、子任务上限 5、迁移保留 Main context/compact。v1.3.0 内容仅为历史，不代表当前 hooks 行为；当前 SessionStart/PostCompact 不自动归档未处理事件。
 
 
 **Update date:** 2026-08-23  

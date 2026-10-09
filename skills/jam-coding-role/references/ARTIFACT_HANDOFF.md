@@ -9,7 +9,7 @@ Use a positive allowlist over relevant untracked/ignored outputs. Scan sensitive
 
 ## Single-file cloud limit and semantic splitting
 
-The default cloud-facing ZIP limit is **95 MiB (99,614,720 bytes)**, not 100 MiB. The margin accommodates connector encoding and implementation differences observed with the shared `Pro_Space` folder.
+The default limit is **95 MiB (99,614,720 bytes) per final compressed ZIP**. It is a configurable packaging convention, not a guarantee about every cloud service or connector; use the actual destination limit when it is smaller.
 
 When the full bundle exceeds the limit:
 
@@ -21,7 +21,7 @@ When the full bundle exceeds the limit:
    - `checkpoints_part01.zip`;
 3. when one semantic group still exceeds the limit, create further ordinary files such as `logs_and_metrics_part01.zip` and `logs_and_metrics_part02.zip`;
 4. place a plain-text `BUNDLE_INDEX.md` beside the archives, explaining order, purpose, exact contents, compressed size and anything not packaged;
-5. do not add SHA-256 fields to the stage bundle index.
+5. record exact contents and sizes without content fingerprints.
 
 Do **not** create `.z01/.z02/.zip`, `.zip.001`, or similar split-volume archives. A cloud planner usually cannot open one part independently and should not be required to download and reconstruct a local multipart archive.
 
@@ -32,14 +32,14 @@ A single checkpoint that still exceeds 95 MiB after ZIP compression must not be 
 Use one immutable namespace per handoff:
 
 ```text
-Pro_Space/<project>/<worktree>/<stage>/<timestamp>__<git-short-sha>/
+<configured-destination>/<project>/<worktree>/<stage>/<release-id>/
 ```
 
 Each release contains `BUNDLE_INDEX.md`, `BUNDLE_MANIFEST.json`, `PRO_HANDOFF.md`, and one or more standard ZIP files. Create new releases only; do not overwrite, move, or delete previous releases.
 
 ## Authorization and upload
 
-Packing and upload require an explicit Owner request or named stage-closure trigger. The public-write Drive permission is standing authorization for create-only stage artifacts, not authorization to upload arbitrary files, credentials, or an unscreened worktree.
+Packing and upload require an explicit Owner request or an approved stage delivery step. Configure the destination and authenticated upload capability in the project. A folder permission does not grant task authorization; the generic templates contain no destination or standing upload grant. Commit, push and publication have their own explicit scope.
 
 Choose upload capability in this order:
 

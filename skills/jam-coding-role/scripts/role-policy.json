@@ -1,0 +1,211 @@
+{
+  "version": "1.6.0",
+  "main_model_effort": "app_owned",
+  "max_active_children": 5,
+  "roles": {
+    "default": {
+      "model": "gpt-6.1-sol",
+      "default_effort": "medium",
+      "allowed_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "window": 196608,
+      "compact": 163840,
+      "profile": "generic",
+      "can_spawn": false
+    },
+    "explorer": {
+      "model": "gpt-6-luna",
+      "default_effort": "high",
+      "allowed_efforts": [
+        "high"
+      ],
+      "window": 65536,
+      "compact": 49152,
+      "profile": "generic",
+      "can_spawn": false
+    },
+    "context_researcher": {
+      "model": "gpt-6.1-sol",
+      "default_effort": "medium",
+      "allowed_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "window": 196608,
+      "compact": 163840,
+      "profile": "generic",
+      "can_spawn": false
+    },
+    "memory_curator": {
+      "model": "gpt-6-luna",
+      "default_effort": "medium",
+      "allowed_efforts": [
+        "medium"
+      ],
+      "window": 65536,
+      "compact": 49152,
+      "profile": "generic",
+      "can_spawn": false
+    },
+    "runtime_qa": {
+      "model": "gpt-6-luna",
+      "default_effort": "high",
+      "allowed_efforts": [
+        "high"
+      ],
+      "window": 65536,
+      "compact": 49152,
+      "profile": "generic",
+      "can_spawn": false
+    },
+    "worker": {
+      "model": "gpt-6.1-sol",
+      "default_effort": "medium",
+      "allowed_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "window": 196608,
+      "compact": 163840,
+      "profile": "generic",
+      "can_spawn": true
+    },
+    "scope_planner": {
+      "model": "gpt-6.1-sol",
+      "default_effort": "high",
+      "allowed_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "window": 196608,
+      "compact": 163840,
+      "profile": "generic",
+      "can_spawn": false
+    },
+    "semantic_worker": {
+      "model": "gpt-6.1-sol",
+      "default_effort": "high",
+      "allowed_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "window": 196608,
+      "compact": 163840,
+      "profile": "generic",
+      "can_spawn": true
+    },
+    "code_reviewer": {
+      "model": "gpt-6.1-sol",
+      "default_effort": "high",
+      "allowed_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "window": 196608,
+      "compact": 163840,
+      "profile": "generic",
+      "can_spawn": false
+    },
+    "isaaclab_worker": {
+      "model": "gpt-6.1-sol",
+      "default_effort": "high",
+      "allowed_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "window": 196608,
+      "compact": 163840,
+      "profile": "doordog",
+      "can_spawn": true,
+      "description": "Implement assigned IsaacLab changes with explicit simulation and training semantics.",
+      "developer_instructions": "Follow root AGENTS.md and .codex/TEAM.md.\nTrace actual entrypoint/config/dependency flow and the local IsaacLab dependency source identified in .ai/PROJECT.md. Preserve explicit tensor shape/dtype/device, manager lifecycle, reward/reset/termination, asset/joint and observation/action semantics. Fail visibly on invalid state; do not hide it with fallback, broad catches, fake defaults or clipping. Complete authorized implementation and narrow evidence, including necessary fixes from that evidence; do not stop mechanically after the first patch. Use the ordinary worker for purely mechanical code edits. No Git or unassigned paths/resources.\n\n[V1.6.0 SPECIALIST]\n完成分配给你的独立产出，遵守当前子授权的写入、资源和完成条件。与依赖方直接交换技术事实；把影响阶段结论的问题交 execution lead，不让 Planner 中转普通依赖。转派仅在角色能力与子授权均允许时使用，不能扩出新预算或新权限。控制其他 agent 需要真实归属或明确移交。不要擅自提交、推送、发布或改科学比较。\n",
+      "sandbox_mode": "workspace-write"
+    },
+    "isaaclab_reviewer": {
+      "model": "gpt-6.1-sol",
+      "default_effort": "high",
+      "allowed_efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "window": 196608,
+      "compact": 163840,
+      "profile": "doordog",
+      "can_spawn": false,
+      "description": "Review one changed IsaacLab/RL semantic contract.",
+      "developer_instructions": "Follow root AGENTS.md and .codex/TEAM.md.\nCheck actual code and the local IsaacLab dependency source identified in .ai/PROJECT.md plus current official docs. Prioritize shape/dtype/device, batched indexing, manager lifecycle, reward routing/sign/scale, reset/termination, observation/action ordering, joint/asset and training/eval meaning. Return at most three evidence-backed blocking findings. No generic duplicate code review, broad tests, edits or Git.\n\n[V1.6.0 SPECIALIST]\n完成分配给你的独立产出，遵守当前子授权的写入、资源和完成条件。与依赖方直接交换技术事实；把影响阶段结论的问题交 execution lead，不让 Planner 中转普通依赖。转派仅在角色能力与子授权均允许时使用，不能扩出新预算或新权限。控制其他 agent 需要真实归属或明确移交。不要擅自提交、推送、发布或改科学比较。\n",
+      "sandbox_mode": "read-only"
+    },
+    "deep_researcher": {
+      "model": "gpt-6-astra",
+      "default_effort": "medium",
+      "allowed_efforts": [
+        "medium"
+      ],
+      "window": 196608,
+      "compact": 163840,
+      "profile": "generic",
+      "can_spawn": false
+    },
+    "execution_lead": {
+      "model": "gpt-6.1-sol",
+      "default_effort": "high",
+      "allowed_efforts": [
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "window": 196608,
+      "compact": 163840,
+      "profile": "generic",
+      "can_spawn": true,
+      "sandbox_mode": "workspace-write",
+      "description": "Execute an approved stage end to end, coordinate members and deliver integrated evidence.",
+      "developer_instructions": "你负责一个已批准阶段的完整执行。读取阶段约定及其当前 revision，确认真实身份和可用资源。在授权范围内拆任务、增派适当成员、分配不冲突的写入与资源、直接协调依赖、整合结果，并完成批准的后续修复、运行和评估。组队规则见 .ai/EXECUTION_TEAM.md。\n\n转派与控制成员由角色能力、阶段授权和真实创建/管理关系共同决定。child 身份不改变阶段职责，也不允许冒充 root；需要时可在阶段已有预算内给 specialist 转派额度。独立 root 入口沿用这些职责，model/effort 仍由 App 选择。\n\n普通进度留本地；把明确 gate、需要新决定的实质问题和整合后的阶段结果发送 Planner。已经批准的步骤无需另求开工批准。科学比较或资源边界需要改变时，保留证据再请求裁定；继续不依赖待决事项的已批工作。最终交付区分完成了什么、结果说明什么、尚不支持什么。"
+    },
+    "outside_view": {
+      "model": "gpt-6.1-sol",
+      "default_effort": "xhigh",
+      "allowed_efforts": [
+        "xhigh"
+      ],
+      "window": 196608,
+      "compact": 163840,
+      "profile": "generic",
+      "can_spawn": false,
+      "sandbox_mode": "read-only",
+      "description": "Reframe a decision-relevant question independently from fresh context; read-only, no approval or control role.",
+      "developer_instructions": "你独立检查问题定义，不承担实施或提交审批。使用新鲜上下文（fork_turns=\"none\"）；先阅读 Owner 原始目标、近期关键选择以及正反证据，形成独立判断，再与团队当前推荐比较。输入与触发规则见 .ai/OUTSIDE_VIEW.md。\n\n给出有依据的重构问题、它影响的决定和能够推翻它的观察。证据不足时明确指出；允许认为当前问题定义已经合适。不要为显得深刻强行反对，不猜测 Owner 的心理动机。保持只读，不派生或控制成员，不直接更改实验、资源或计划；向 Planner/Owner 提供建议，由现有决策路径处理。"
+    }
+  },
+  "stage_defaults": {
+    "team_slots": 5,
+    "delegate_depth_left": 2
+  }
+}

@@ -34,3 +34,8 @@ Freeze only formal review/QA candidates. Verdicts bind exact paths/contracts/top
 ## Closure
 
 No fixed ceremony. Release real leases and deactivate when tracked work is done. Ordinary work never initializes this state.
+
+
+## 阶段组织权
+
+阶段内的 ownership、依赖与资源安排由 execution lead 在有效 grant 内处理，root/child 身份不改变这项职责。现有正式协调记录仍按需使用；它不取代阶段授权，也不要求 Planner 为已批步骤逐一放行。

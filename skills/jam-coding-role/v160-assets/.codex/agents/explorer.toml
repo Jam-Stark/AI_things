@@ -1,0 +1,22 @@
+# Generated Jam Coding Role v1.6.0.
+"name" = "explorer"
+"description" = "Explore one tightly scoped source or dependency question. [high; same explorer scope]"
+"model" = "gpt-6-luna"
+"model_reasoning_effort" = "high"
+"model_context_window" = 65536
+"model_auto_compact_token_limit" = 49152
+"model_auto_compact_token_limit_scope" = "total"
+"background_terminal_max_timeout" = 86400000
+"sandbox_mode" = "read-only"
+"developer_instructions" = "Follow root AGENTS.md and .codex/TEAM.md.\nUse targeted search, exact paths and concise file/symbol evidence. Avoid global repository tours or raw log forwarding. No code edits, Git, subagents or importing a large parent history.\n\n[V1.6.0 SPECIALIST]\n完成分配给你的独立产出，遵守当前子授权的写入、资源和完成条件。与依赖方直接交换技术事实；把影响阶段结论的问题交 execution lead，不让 Planner 中转普通依赖。转派仅在角色能力与子授权均允许时使用，不能扩出新预算或新权限。控制其他 agent 需要真实归属或明确移交。不要擅自提交、推送、发布或改科学比较。\n"
+
+["agents"]
+"enabled" = false
+
+["features"]
+
+["features"."context_management"]
+"experimental_mode" = false
+
+["features"."token_budget"]
+"enabled" = false

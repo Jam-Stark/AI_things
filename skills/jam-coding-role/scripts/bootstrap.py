@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Safely bootstrap, refresh, or audit Jam Coding Role v1.5.0.
+"""Safely bootstrap, refresh, or audit Jam Coding Role v1.6.0.
 
 The default install is deliberately lean. Persistent coordination, long-run
 continuity, stage planning, artifact handoff, runtime adapters, and a project
@@ -25,6 +25,8 @@ VERSION = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
 MARKER = "managed-by: jam-coding-role"
 OPTIONAL_INSTRUCTION_DOCS = {
     ".ai/TEAM_STATE.md",
+    ".ai/EXECUTION_TEAM.md",
+    ".ai/OUTSIDE_VIEW.md",
     ".ai/MEMORY_GOVERNANCE.md",
     ".ai/LONG_RUNNING_TASKS.md",
     ".ai/SCIENTIFIC_ENGINEERING.md",
@@ -32,7 +34,7 @@ OPTIONAL_INSTRUCTION_DOCS = {
     ".ai/ARTIFACT_HANDOFF.md",
 }
 
-Spec = tuple[Path | None, bool]
+Spec = tuple[Path | bytes | None, bool]
 
 
 def specs(
@@ -136,22 +138,9 @@ def specs(
             }
         )
 
-    # JAM-V150-ASSETS: new installs get bounded models, hooks and local guards.
-    # refresh intentionally preserves existing un-managed configs; run the reviewed
-    # migration kit for a pre-v1.5 target rather than silently replacing its config.
     if "codex" in runtimes:
-        base = ROOT / "v150-assets"
-        for src in sorted(base.rglob("*")):
-            if src.is_file() and "__pycache__" not in src.parts and src.suffix != ".pyc":
-                dest = src.relative_to(base)
-                managed = dest.as_posix().startswith(".ai/") and dest.suffix == ".md"
-                files[dest] = (src, managed)
-        # Preserve the existing optional-coordination validator underneath the gate.
-        files[Path(".ai/scripts/codex_team_hook.py")] = (ROOT / "scripts/codex_team_hook.py", False)
-
-    if "codex" in runtimes:
-        files[Path(".codex/AGENTS.md")] = (ROOT / "templates/CODEX_AGENTS.md", False)
-        files[Path(".codex/TEAM.md")] = (ROOT / "templates/CODEX_TEAM.md", False)
+        # Added by the shared v1.6.0 plan in main(), using this project's configuration.
+        pass
 
     if "omo" in runtimes:
         files[Path(".omo/AGENTS.md")] = (ROOT / "templates/OMO_AGENTS.md", False)
@@ -170,7 +159,8 @@ def specs(
     return files
 
 
-def content(source: Path | None, destination: Path) -> str:
+def content(source: Path | bytes | None, destination: Path) -> str:
+    if isinstance(source, bytes): return source.decode("utf-8")
     if destination == Path(".ai/ROLE_VERSION"):
         return f"{VERSION}\n"
     if source is None:
@@ -185,68 +175,21 @@ def target_dir(raw: Path) -> Path:
     return target
 
 
-def write(path: Path, text: str, dry_run: bool) -> None:
-    if dry_run:
-        return
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(text, encoding="utf-8")
-    if path.suffix == ".py":
-        path.chmod(path.stat().st_mode | 0o111)
-
-
-def init(target: Path, files: dict[Path, Spec], dry: bool) -> int:
-    for destination, (source, _) in files.items():
-        path = target / destination
-        if path.exists():
-            print(f"SKIPPED EXISTING: {destination}")
-            continue
-        write(path, content(source, destination), dry)
-        print(f"{'WOULD CREATE' if dry else 'CREATED'}: {destination}")
-
-    print("\nFill .ai/PROJECT.md from real code/config paths, then run audit.")
-    if Path(".ai/team-state.toml") in files:
-        print("NOTE: coordination tooling is installed but remains inactive until explicit activation.")
-    if Path(".ai/artifact-sync.toml") in files:
-        print(
-            "NOTE: artifact handoff remains explicit. Public-write folder permission does not "
-            "replace runtime/API authentication, and no upload is performed by bootstrap."
-        )
-    return 0
-
-
-def is_managed_text(text: str) -> bool:
-    return MARKER in "\n".join(text.splitlines()[:3])
-
-
-def refresh(target: Path, files: dict[Path, Spec], dry: bool) -> int:
-    conflicts: list[Path] = []
-    changed = 0
+def selected_files(target: Path, files: dict[Path, Spec], command: str) -> dict[str, bytes]:
+    """Select optional files before any mutation; existing project files stay put."""
+    result = {}
     for destination, (source, managed) in files.items():
-        if not managed:
-            continue
         path = target / destination
-        expected = content(source, destination)
-        if not path.exists():
-            write(path, expected, dry)
-            print(f"{'WOULD CREATE' if dry else 'CREATED'}: {destination}")
-            changed += 1
+        if command == "init" and path.exists():
             continue
-        actual = path.read_text(encoding="utf-8")
-        if destination != Path(".ai/ROLE_VERSION") and not is_managed_text(actual):
-            conflicts.append(destination)
-            continue
-        if actual != expected:
-            write(path, expected, dry)
-            print(f"{'WOULD REFRESH' if dry else 'REFRESHED'}: {destination}")
-            changed += 1
-
-    for path in conflicts:
-        print(f"REFUSED UNMANAGED FILE: {path}", file=sys.stderr)
-    if conflicts:
-        return 2
-    if not changed:
-        print("Managed core is already current.")
-    return 0
+        if command == "refresh":
+            if not managed:
+                continue
+            if path.exists() and destination != Path(".ai/ROLE_VERSION"):
+                if MARKER not in "\n".join(path.read_text(encoding="utf-8").splitlines()[:3]):
+                    raise ValueError(f"Unmanaged optional file requires explicit merge: {destination}")
+        result[destination.as_posix()] = content(source, destination).encode("utf-8")
+    return result
 
 
 def parse_json(path: Path, issues: list[str]) -> Any | None:
@@ -296,7 +239,7 @@ def audit(
             issues.append(f"managed drift: {destination}")
 
     route_checks = {
-        Path("AGENTS.md"): (".ai/ROLE.md", ".ai/PROJECT.md", ".ai/WORKFLOW.md", "FAST"),
+        Path("AGENTS.md"): (".ai/ROLE.md", ".ai/PROJECT.md"),
         Path(".codex/AGENTS.md"): ("AGENTS.md", ".codex/TEAM.md"),
         Path(".omo/AGENTS.md"): ("AGENTS.md", "Team Mode"),
         Path("CLAUDE.md"): ("@AGENTS.md", "single-agent"),
@@ -424,16 +367,16 @@ def audit(
         if checker.exists():
             probe = subprocess.run([sys.executable, str(checker), "--root", str(target)], capture_output=True, text=True, timeout=15)
             if probe.returncode:
-                issues.append("v1.5.0 model/communication guard audit failed: " + probe.stdout[-4000:])
+                issues.append("v1.6.0 model/communication guard audit failed: " + probe.stdout[-4000:])
         else:
-            issues.append("missing v1.5.0 codex_preflight.py")
+            issues.append("missing v1.6.0 codex_preflight.py")
 
     if issues:
         for issue in issues:
             print(f"FAIL: {issue}")
         return 1
 
-    print("PASS: requested v1.5 core, adapters, and optional facilities match this pack.")
+    print("PASS: requested v1.6 core, adapters, and optional facilities match this pack.")
     print("PASS: optional workflow documents remain lazy-routed rather than globally preloaded.")
     project = target / ".ai/PROJECT.md"
     if project.exists() and "Complete this file" in project.read_text(encoding="utf-8"):
@@ -448,6 +391,7 @@ def parser() -> argparse.ArgumentParser:
         command = commands.add_parser(name)
         command.add_argument("target", type=Path)
         command.add_argument("--profile", choices=("general", "scientific"), default="general")
+        command.add_argument("--role-profile", choices=("generic", "doordog"), help="Default: preserve the installed role profile.")
         command.add_argument(
             "--runtime", action="append", choices=("codex", "omo", "claude"), default=[]
         )
@@ -462,7 +406,10 @@ def parser() -> argparse.ArgumentParser:
         command.add_argument("--artifact-sync", action="store_true")
         command.add_argument("--omo-team-mode", action="store_true")
         if name != "audit":
-            command.add_argument("--dry-run", action="store_true")
+            mode = command.add_mutually_exclusive_group()
+            mode.add_argument("--apply", action="store_true", help="Write the plan with a reversible per-file backup.")
+            mode.add_argument("--dry-run", action="store_false", dest="apply")
+            command.set_defaults(apply=False)
     return root
 
 
@@ -487,10 +434,20 @@ def main() -> int:
         artifact_sync=args.artifact_sync,
         omo_team_mode=args.omo_team_mode,
     )
-    if args.command == "init":
-        return init(target, files, args.dry_run)
-    if args.command == "refresh":
-        return refresh(target, files, args.dry_run)
+    from migrate_v160 import plan, apply_plan
+    workflow = plan(target, args.role_profile) if "codex" in args.runtime else {}
+    if args.command != "audit":
+        optional = {rel: spec for rel, spec in files.items() if rel.as_posix() not in workflow}
+        selected = selected_files(target, optional, args.command)
+        selected.update(workflow)
+        print(json.dumps(apply_plan(target, selected, args.apply), indent=2))
+        return 0
+    for relative, data in workflow.items():
+        if data is not None:
+            files[Path(relative)] = (data, True)
+        elif (target / relative).exists():
+            print("FAIL: obsolete workflow file: " + relative)
+            return 1
     return audit(
         target,
         files,

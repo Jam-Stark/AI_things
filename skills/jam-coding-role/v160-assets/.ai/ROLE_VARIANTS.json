@@ -1,0 +1,64 @@
+{
+  "default": {
+    "low": "default__low",
+    "medium": "default",
+    "high": "default__high",
+    "xhigh": "default__xhigh",
+    "max": "default__max"
+  },
+  "explorer": {
+    "high": "explorer"
+  },
+  "context_researcher": {
+    "low": "context_researcher__low",
+    "medium": "context_researcher",
+    "high": "context_researcher__high",
+    "xhigh": "context_researcher__xhigh",
+    "max": "context_researcher__max"
+  },
+  "memory_curator": {
+    "medium": "memory_curator"
+  },
+  "runtime_qa": {
+    "high": "runtime_qa"
+  },
+  "worker": {
+    "low": "worker__low",
+    "medium": "worker",
+    "high": "worker__high",
+    "xhigh": "worker__xhigh",
+    "max": "worker__max"
+  },
+  "scope_planner": {
+    "low": "scope_planner__low",
+    "medium": "scope_planner__medium",
+    "high": "scope_planner",
+    "xhigh": "scope_planner__xhigh",
+    "max": "scope_planner__max"
+  },
+  "semantic_worker": {
+    "low": "semantic_worker__low",
+    "medium": "semantic_worker__medium",
+    "high": "semantic_worker",
+    "xhigh": "semantic_worker__xhigh",
+    "max": "semantic_worker__max"
+  },
+  "code_reviewer": {
+    "low": "code_reviewer__low",
+    "medium": "code_reviewer__medium",
+    "high": "code_reviewer",
+    "xhigh": "code_reviewer__xhigh",
+    "max": "code_reviewer__max"
+  },
+  "deep_researcher": {
+    "medium": "deep_researcher"
+  },
+  "execution_lead": {
+    "high": "execution_lead",
+    "xhigh": "execution_lead__xhigh",
+    "max": "execution_lead__max"
+  },
+  "outside_view": {
+    "xhigh": "outside_view"
+  }
+}

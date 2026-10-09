@@ -7,4 +7,4 @@ The run supervisor can operate without the team ledger. Add ledger/lease only wh
 
 Record command, cwd, source revision, config, resource, output, expected checkpoint, stop condition and state. Use named detached tmux and avoid high-frequency polling.
 
-Process exit, checkpoint presence, evaluation return code and experiment quality are different evidence levels. Pending events can be read on a later session start, but do not guarantee revival of an ended Main turn. A delivered event must be marked and moved to the archive before its pending copy is removed; later sessions must not inject the same event again.
+Process exit, checkpoint presence, evaluation return code and experiment quality are different evidence levels. Pending events can be read on a later session start, but do not guarantee revival of an ended Main turn. Notification alone does not resolve or archive an event. Keep its durable receipt until the responsible lead explicitly handles it; the approved stage controls continuation and resource ownership.

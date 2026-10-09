@@ -1,0 +1,51 @@
+{
+  "description": "Jam v1.6.0: stage grants, role capabilities, owned lifecycle and durable-run continuity.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.ai/scripts/codex_v160_hook.py\" pre",
+            "timeout": 20
+          }
+        ],
+        "matcher": "^(?:(?:agents|collaboration|functions\\.collaboration)\\.)?(spawn_agent|resume_agent|close_agent|send_message|followup_task|interrupt_agent|list_agents)$"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.ai/scripts/codex_v160_hook.py\" post",
+            "timeout": 20
+          }
+        ],
+        "matcher": "^(?:(?:agents|collaboration|functions\\.collaboration)\\.)?(spawn_agent|resume_agent|close_agent|send_message|followup_task|interrupt_agent|list_agents)$"
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.ai/scripts/codex_v160_hook.py\" session-start",
+            "timeout": 20
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.ai/scripts/codex_v160_hook.py\" post-compact",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
+  }
+}

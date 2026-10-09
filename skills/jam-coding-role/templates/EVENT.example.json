@@ -1,0 +1,6 @@
+{
+  "event_id": "one-stable-event-id",
+  "kind": "DECISION_REQUIRED",
+  "evidence_ref": "/absolute/decision-evidence.json",
+  "needs_decision": true
+}

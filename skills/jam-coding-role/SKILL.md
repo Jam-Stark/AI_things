@@ -1,91 +1,38 @@
 ---
 name: jam-coding-role
-description: Bootstrap, migrate, audit, or evolve a lean project AI coding role. Use for project-level Codex/OpenCode/OMO/Claude routing, optional multi-agent coordination, file-based memory, long-running scientific work, or artifact handoff.
+description: Install or update a project AI workflow with autonomous execution teams, independent outside view, clear Owner delivery, and task-specific memory and scientific facilities.
 ---
 
-# Jam Coding Role v1.5.0
+# Jam Coding Role v1.6.0
 
-This skill provides a portable behavior kernel with **lean defaults and on-demand control facilities**.
+Use actual project source, current authority and evidence. Preserve project facts, research edits and active work. Main model/effort belong to the App. Read `references/ROLE.md` for stable behavior and the Owner delivery principle; other documents are task routes, not a full-reading checklist.
 
-## Core design
+Small work runs directly. Delegate when there is an independent output or specialist context. For a complete approved stage, use an execution lead: either an independent root or a Planner-spawned child. Both organize their team and complete authorized work without per-command approval. Keep actual runtime identity separate from delegated responsibility.
 
-- FAST / STANDARD / HIGH_RISK route selection;
-- no mandatory team, full coordination ledger, disk contract, reviewer wave, memory curator, or artifact step for ordinary work; Codex child allocation uses its small persistent quota ledger;
-- Codex MultiAgentV2 P2P remains available without persistent coordination state;
-- ledger, lease, candidate freeze and verdict dependency activate only for real multi-writer/resource/cross-session/formal-review needs;
-- memory governance is proactive but candidate-triggered;
-- long-run and artifact workflows are explicit optional profiles;
-- standalone Claude Code remains single-agent;
-- OpenCode/OMO preserves its own official ordinary delegation and Team Mode semantics.
+## Read as needed
 
-## Files
+- Team/grants/communication: `references/EXECUTION_TEAM.md`, generated `.codex/TEAM.md`.
+- Reconsidering the problem: `references/OUTSIDE_VIEW.md`, fresh context, advisory only.
+- Role and effort: `references/MODEL_ROUTING.md`; context behavior: `references/CONTEXT_POLICY.md`.
+- Shared writes/resources: `references/TEAM_STATE.md`; durable jobs: `references/LONG_RUNNING_TASKS.md`.
+- Scientific claims: `references/SCIENTIFIC_ENGINEERING.md`; stage planning: `references/STAGE_DECISION.md`.
+- Reusable facts: `references/MEMORY_GOVERNANCE.md`; requested handoff: `references/ARTIFACT_HANDOFF.md`.
+- Design references: `references/WORKFLOW_SOURCES.md`; installation and evidence limits: `README.md`, `VERIFICATION.md`.
 
-- `references/ROLE.md`: stable coding behavior and Chinese expression standard;
-- `references/WORKFLOW.md`: FAST / STANDARD / HIGH_RISK and facility triggers;
-- `references/RUNTIME_ADAPTERS.md`: Codex, OpenCode/OMO and standalone Claude routing;
-- `references/TEAM_STATE.md`: optional coordination ledger;
-- `references/MEMORY_GOVERNANCE.md`: active, candidate-triggered memory maintenance;
-- `references/LONG_RUNNING_TASKS.md`: tmux receipts and pending events;
-- `references/SCIENTIFIC_ENGINEERING.md`: optional ML/RL/simulation/robotics evidence discipline;
-- `references/STAGE_DECISION.md`: optional Owner-directed local/cloud planning synthesis;
-- `references/ARTIFACT_HANDOFF.md`: explicit stage artifact packaging, 95 MiB semantic ZIP splitting and Drive handoff;
-- `references/PROJECT_GROWTH.md`: grow only after observed workflow failure;
-- `scripts/bootstrap.py`: safe init/refresh/audit;
-- optional helpers under `scripts/`.
-
-## Codex v1.5.0 resources
-
-- `references/MODEL_ROUTING.md`: Sol/medium default, Luna retrieval, sole Astra/medium adviser, five-child ceiling.
-- `references/SESSION_PROTOCOL.md`: bounded authorized Main-to-Main handoffs.
-- `references/CONTEXT_POLICY.md`: preserve explicit Main budgets and model-aware child context.
-- `references/TOOL_LIFECYCLE.md`: opt-in owned temporary process cleanup.
-- `scripts/migrate_v150.py`: preview/apply an existing project migration with file backups; no automatic Git writes.
-
-## Codex hook contract
-
-Codex installs quota/continuity hooks; full coordination remains optional:
-
-- `PreToolUse` no-op success exits `0` without stdout; deny uses only the event-specific permission decision and never returns `continue`;
-- `PostToolUse` and `SessionStart` may use their supported common output fields;
-- repository-local commands resolve scripts from `$(git rev-parse --show-toplevel)`;
-- malformed strict-policy input fails closed;
-- PostToolUse persistence is metadata-only, and SessionStart/PostCompact report durable pointers without deleting or acknowledging pending events.
-
-The implementation details and verification evidence are recorded in `UPDATE_LOG.md`.
-
-## Bootstrap
-
-Minimal project:
+## Install or update
 
 ```bash
-python scripts/bootstrap.py init /path/to/project
+python3 scripts/bootstrap.py init /path/to/project --runtime codex
+python3 scripts/bootstrap.py refresh /path/to/project --runtime codex
+python3 scripts/bootstrap.py refresh /path/to/project --runtime codex --apply
+python3 scripts/migrate_v160.py --root /path/to/project
+python3 scripts/migrate_v160.py --root /path/to/project --apply
 ```
 
-Scientific project with runtime adapters but without persistent coordination:
+Init, refresh and migration default to dry-run; use `--apply` to write. Fresh projects use the generic role profile; existing projects retain their installed profile. The optional `doordog` profile adds IsaacLab roles (`bootstrap.py --role-profile doordog`, or `migrate_v160.py --profile doordog`); dependency paths and project facts stay in the project. See `examples/migrate-existing-project.md`.
 
-```bash
-python scripts/bootstrap.py init /path/to/project \
-  --profile scientific \
-  --runtime codex \
-  --runtime omo \
-  --runtime claude
-```
+All three commands share the role generator and installation source. Preserve project overlays, memory, credentials, unrelated hooks and existing process/state records. Remove known obsolete organizational rules, including conflicting ones outside managed entry blocks; preserve domain constraints. Optional artifact destinations start unconfigured and require project authorization.
 
-Add facilities only when needed:
+Role capabilities, effort variants and model mappings come from `scripts/role-policy.json`. Team seats are shared, not multiplied per parent. Keep the persistent Astra identity. Do not install a global session bus, add silent transport fallbacks or confuse queued, delivered and handled.
 
-```bash
-  --memory
-  --codex-coordination-state \
-  --long-run-supervisor \
-  --stage-workflow \
-  --artifact-sync \
-  --omo-team-mode
-```
-
-`init` never overwrites existing files. `refresh` updates only managed core files. Project entrypoints, runtime configuration, memory, credentials and local overlays remain project-owned.
-
-## Migration principle
-
-A migration script must not stage or commit by default. Git writes require current explicit Owner authorization and must be surfaced as opt-in flags. External upload is also explicit; never hide it in a session-end hook.
-
-Existing project: `python3 scripts/migrate_v150.py --root /path/to/project` previews; add `--apply` to write with backup. Init/refresh do not silently replace existing project-owned config. No runtime smoke or Git commit/push is automatic.
+Use a new session to load the new registry and instructions. Register hooks through the supported host path and review trust through `/hooks`; never edit trust automatically. Static parsing, actual helper execution, native team operation and cross-root/Dot delivery are separate evidence. Installation does not automatically run training, a model matrix, Git publication or unrelated audits. OMO/standalone Claude retain their own runtime behavior.

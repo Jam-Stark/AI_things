@@ -34,16 +34,17 @@ max_file_bytes = 2147483648
 max_bundle_bytes = 10737418240
 
 [packaging]
-# Pro_Space/connector deployments have shown a practical 100 MB single-file
-# ceiling. Keep 5 MiB margin for connector encoding and implementation variance.
+# Default final compressed ZIP limit. Use a smaller value when the actual
+# destination requires it; this is not a universal connector limit.
 max_single_zip_bytes = 99614720
 strategy = "single-or-semantic-standard-zips"
 index_filename = "BUNDLE_INDEX.md"
 split_volume_archives = false
 
 [upload]
+# Fill only after the destination and this upload are authorized.
 backend = "capability-router"
-standing_authorization = "create-only-stage-artifacts"
-root_folder_id = "1JWQrkkOrItsKlFUjfxsadUrOcXChGpOf"
-remote = "gdrive"
-rclone_remote = "gdrive"
+standing_authorization = ""
+root_folder_id = ""
+remote = ""
+rclone_remote = ""

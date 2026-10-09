@@ -1,0 +1,22 @@
+# Generated Jam Coding Role v1.6.0.
+"name" = "code_reviewer__medium"
+"description" = "Review one concrete correctness concern in a changed execution path. [medium; same code_reviewer scope]"
+"model" = "gpt-6.1-sol"
+"model_reasoning_effort" = "medium"
+"model_context_window" = 196608
+"model_auto_compact_token_limit" = 163840
+"model_auto_compact_token_limit_scope" = "total"
+"background_terminal_max_timeout" = 86400000
+"sandbox_mode" = "read-only"
+"developer_instructions" = "Follow root AGENTS.md and .codex/TEAM.md.\nTrace changed code and direct callers. Return at most three high-confidence blocking findings with file/symbol evidence and concrete failure mode. No style, unrelated hardening, speculative edge cases or duplicate review passes. Send actionable findings to the responsible worker and execution lead.\n\n[V1.6.0 SPECIALIST]\n完成分配给你的独立产出，遵守当前子授权的写入、资源和完成条件。与依赖方直接交换技术事实；把影响阶段结论的问题交 execution lead，不让 Planner 中转普通依赖。转派仅在角色能力与子授权均允许时使用，不能扩出新预算或新权限。控制其他 agent 需要真实归属或明确移交。不要擅自提交、推送、发布或改科学比较。\n"
+
+["agents"]
+"enabled" = false
+
+["features"]
+
+["features"."context_management"]
+"experimental_mode" = false
+
+["features"."token_budget"]
+"enabled" = false

@@ -4,7 +4,7 @@
 
 当前主要内容：
 
-- `skills/jam-coding-role`：个人通用 Coding Role 与项目 AI workflow bootstrap。当前发布版本为 **v1.3.0**，采用 FAST / STANDARD / HIGH_RISK 分层路由，保留 Codex P2P、主动 memory governance、长任务连续性和 artifact handoff，但只在真实触发条件下启用 ledger、lease、freeze 等控制设施。
+- `skills/jam-coding-role`：通用 Coding Role 与项目 AI workflow bootstrap，当前版本 **v1.6.0**。提供 root/child execution lead 双入口、阶段内自主执行、Outside view 和单源角色配置；memory、长任务和 artifact handoff 按需启用。
 - `skills/pdf`：PDF 读取、生成与渲染验证工作流，强调用 Poppler/PNG 预览检查版式。
 - `skills/pdf2zh-paper-translator`：从本地 Papers/Zotero/ZotMoov 或合法开放来源解析论文 PDF，并通过 pdf2zh + Gemini 翻译为中英双语/中文 PDF。
 - `skills/ppt-master`：多格式资料到 SVG 页面再到 PPTX 的演示文稿生成流水线，包含模板、图表和图片生成辅助脚本。
@@ -77,27 +77,15 @@ python ~/workspace/AI_things/skills/jam-coding-role/scripts/bootstrap.py audit \
   --runtime claude
 ```
 
-`init` 不覆盖现有文件；`refresh` 只更新带 managed marker 的通用 core，不覆盖 project overlay、memory、root entrypoint 或 runtime adapter。成熟项目迁移前先阅读 `skills/jam-coding-role/examples/` 中的对应方案。
+`init`、`refresh` 和 `migrate_v160.py` 默认只预览，添加 `--apply` 才写入并备份。Codex 的三条入口共用生成器，更新 managed workflow/角色并定向清理已知旧组织规则，保留项目 overlay、memory、无关配置/hooks 和运行状态。使用新会话加载更新；完整说明见 [迁移示例](skills/jam-coding-role/examples/migrate-existing-project.md)。
 
-## Jam Coding Role v1.3.0 历史更新重点
+## Jam Coding Role v1.6.0
 
-- 普通 QA、临时实现和明确小改动继续走轻量 FAST / STANDARD 路径；
-- persistent team ledger、disk contract、lease 和 candidate freeze 只按需启用；
-- Codex `PreToolUse` 使用事件专用输出：无事放行时不输出内容，拒绝时只返回支持的 permission decision；
-- 所有仓库内 hook 通过 Git 根目录定位脚本，允许 Codex 从任意子目录启动；
-- strict hook 输入或 Git-root 解析错误 fail closed；
-- `PostToolUse` 只记录协调 metadata；`SessionStart` pending event 只投递一次后归档；
-- `Pro_Space` artifact 单 ZIP 默认上限为 95 MiB，超限时按语义生成可独立打开的标准 ZIP，并附 `BUNDLE_INDEX.md`；不生成 `.z01/.z02` 分卷，也不把超大 checkpoint 硬切成无效碎片。
+通用默认包含 12 种职责、38 个注册配置。execution lead 可由 Owner 独立启动，也可由 Planner 派生；Outside view 使用新上下文，只提出建议。角色能力与有效阶段授权共同决定转派，多个父节点共享 team 额度。Main model/effort 由 App 选择，已有 context 设置保留。
 
-详细内容见：
+新项目不预置私人路径、云端文件夹或上传授权。已有项目保留其 role profile；可选 IsaacLab profile 用于需要该领域角色的项目。OMO 和 standalone Claude 继续使用各自 runtime 规则。
 
-```text
-skills/jam-coding-role/UPDATE_LOG.md
-skills/jam-coding-role/CHANGELOG.md
-skills/jam-coding-role/VERIFICATION.md
-```
-
-安装或修改项目级 Codex hooks 后，应在 Codex 中用 `/hooks` 检查并信任当前精确定义。
+安装或修改 hooks 后，通过宿主 `/hooks` 检查与信任。配置解析、显式 A/B 实际运行、跨 root 通信和自动回调是不同证据；已知限制见 [VERIFICATION.md](skills/jam-coding-role/VERIFICATION.md)，版本历史见 [CHANGELOG.md](skills/jam-coding-role/CHANGELOG.md)。
 
 ## 多设备同步流程
 
@@ -133,9 +121,3 @@ git push
 - `scientific-figure-making` 来源于 `ChenLiu-1996/figures4papers` 的同名目录；用于有明确出版目标的 Matplotlib 图表，并建议同时导出高分辨率 PNG 与 PDF/SVG 矢量版本。
 - `tensor-formula-viz` 来源于 `wdkns/wdkns-skills` 的 `skills/tensor-formula-viz`；默认使用可编辑 TikZ，中文图建议使用 XeLaTeX 和 Fandol 字体集。
 - `zotero-zotmoov` 的设备路径通过 `ZOTERO_DATA_DIR`、`ZOTERO_PROFILE_DIR`、`ZOTERO_DB` 和 `PAPERS_DIR` 配置。
-
-## Coding Role v1.5.0
-
-`skills/jam-coding-role` 的 Codex runtime 默认 Sol/medium、子任务上限 5，检索与机械任务使用 Luna，唯一 Astra/medium 子角色。Main model/effort 属于 App，迁移保留已有 Main context/compact；新增有界会话交接和工具归属回收。新项目由 bootstrap 的 v150-assets 安装；已有项目用审阅后的迁移包升级配置。OMO 与 standalone Claude 的既有适配器不被 Codex 模型配置替换。具体见 skill README 与 references。
-
-本地 v1.5.0 修正与实际验证边界见 `skills/jam-coding-role/VERIFICATION.md`；配置可解析不等于实际 App 行为已验收。

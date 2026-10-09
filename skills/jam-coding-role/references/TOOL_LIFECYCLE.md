@@ -1,5 +1,5 @@
 <!-- managed-by: jam-coding-role; file: TOOL_LIFECYCLE.md -->
-# Tool / MCP lifecycle v1.5.0
+# Tool / MCP lifecycle v1.6.0
 
 先区分资源归属，不把“存在时间长”误当“泄漏”。类型为：本 task 的临时工具；同 session 仍在用的 MCP；多 session 共享宿主服务；单独授权的 durable training/eval。只有第一类在本 task 结束时回收。关闭子 agent 后应核对其实际临时进程；不能假定关闭聊天窗口一定触发 OS 进程回收。
 
@@ -17,7 +17,7 @@ python3 .ai/scripts/process_inventory.py --limit 100 > /private/process-before.j
 
 stdio MCP 正常关闭顺序：停止接收新任务→关闭 stdin→给进程自行退出的时间→只对确定归属的进程 TERM→宽限后 KILL。MCP 不需要虚构一个通用 shutdown JSON-RPC 方法。远程 HTTP MCP 关闭客户端请求/连接，不杀第三方服务器。tool request timeout 也不等于 server 进程已经回收。
 
-## 本包可运行的 Linux 边界
+## 本工作流可运行的 Linux 边界
 
 `tool_guard.py` 是 **opt-in 的短生命周期工具/stdio MCP 包装器**，不是全系统清理器。要求 Linux + pidfd。它在启动前记录 owner PID/启动标识、boot ID、UID、随机继承 token、可执行文件名（不记录参数）；子树继承 token。任务退出、父 owner 消失、取消或 stdio EOF 后清理被登记的临时子树。stdout 保持透明；诊断走 stderr；原子收据只写本机私有路径。
 
@@ -55,12 +55,12 @@ finish 只终止这份私有 receipt 对应的包装器/被标记的临时后代
 
 没有 token 的历史遗留进程、主动清空环境的后代、其他用户进程都不会被该脚本误判并强杀。残留必须报告和单独确认；这限制了清理覆盖范围，但比杀错训练安全。wrapper 被 SIGKILL 时不能执行 finally；持久收据允许之后显式 reap。机器断电、睡眠、共享服务生命周期不由本脚本保证。
 
-macOS 需要另验 launchd/进程组或原生宿主句柄；Windows 需要 Job Objects/原生句柄。本包没有实现这两个 OS 的自动回收，不能在它们上面假装工具守卫已经生效。
+macOS 需要另验 launchd/进程组或原生宿主句柄；Windows 需要 Job Objects/原生句柄。本工作流没有实现这两个 OS 的自动回收，不能在它们上面假装工具守卫已经生效。
 
 ## 禁止事项与验收
 
 禁止 pkill node/python/npx/codex，禁止按“运行超过 30 分钟”杀进程，禁止静默日志判断训练死锁。禁止把 training/eval/tmux、Codex App、shared app-server 包成 ephemeral tool。不得为解决泄漏新造每个 hook/每个消息一个常驻管理进程。
 
-部署验收：空闲进程基线→连续 30 次短工具→失败/取消/stdio EOF/owner 退出→数量和 RSS 回到合理基线；记录 pid/start identity，不只看名称。另开一个获授权的独立长任务作为保护对象，确认它完全未被触碰。历史无归属进程先出清单，请 Owner 确认后针对精确身份处理；这不是本包默认自动动作。
+部署验收：空闲进程基线→连续 30 次短工具→失败/取消/stdio EOF/owner 退出→数量和 RSS 回到合理基线；记录 pid/start identity，不只看名称。另开一个获授权的独立长任务作为保护对象，确认它完全未被触碰。历史无归属进程先出清单，请 Owner 确认后针对精确身份处理；这不是本工作流默认自动动作。
 
 实施约束：以上运行验收场景是后续按需验证说明，不是本次安装自动启动的测试任务。Owner 确认实现或报告具体问题后再安排相关测试；未执行项保持 NOT_RUN。

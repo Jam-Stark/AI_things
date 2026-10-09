@@ -1,0 +1,35 @@
+{
+  "_notice": "Template only, not authority. Fill from the existing approved plan; binding does not ask Owner for approval again.",
+  "format_version": "1.6.0",
+  "status": "draft",
+  "team_id": null,
+  "stage_id": null,
+  "plan_revision": null,
+  "plan_ref": null,
+  "authorization": {
+    "issuer_actor": null,
+    "source_ref": null
+  },
+  "responsible_actor": null,
+  "lead_task_name": "stage_lead",
+  "lead_role": "execution_lead",
+  "scope": {
+    "workspace_root": null,
+    "write_paths": [],
+    "allowed_operations": [
+      "read",
+      "spawn",
+      "message",
+      "check"
+    ],
+    "resources": []
+  },
+  "budget": {
+    "team_work_slots": 5,
+    "max_edges_below_lead": 2,
+    "approved_runs": []
+  },
+  "completion_ref": null,
+  "gates": [],
+  "planner_actor": null
+}

@@ -6,9 +6,9 @@
 ## 1. 角色与权限
 
 - **Owner**：发起阶段、选择 planner 组合、确定预算与最终方案。
-- **Local planner（常见为 standalone Claude）**：能读本地 worktree、memory、未跟踪 artifact、resolved config，并可运行本地 smoke/IsaacLab；负责生产可执行性和资源现实性。
+- **Local planner（常见为 standalone Claude）**：能读本地 worktree、memory、未跟踪 artifact、resolved config，并可运行已授权的本地验证；负责生产可执行性和资源现实性。
 - **Cloud insight planner（常见为 GPT Pro）**：读取远程仓库和阶段 artifact bundle，独立分析 novelty、研究问题、替代解释和实验设计；不得假设看不到的本地运行事实。
-- **Worker**：实现和运行正式方案；不替 Owner 决定科学主张或放宽 release 标准。
+- **Execution lead**：组织和完成已批准阶段，包括允许的科学迭代；超出范围或放宽既定主张/发布标准时请求决定。两个入口见 `.ai/EXECUTION_TEAM.md`。
 
 ## 2. Owner 选择 planner roster
 
@@ -24,13 +24,13 @@
 
 ```text
 上一阶段收口
--> worker 固化 code / ledger / artifact bundle
+-> execution lead 整合 code / evidence / artifact bundle
 -> local planner 独立方案
 -> cloud planner 独立方案
 -> local feasibility audit + comparison
 -> formal synthesis
 -> Owner approval
--> worker execution
+-> execution lead execution
 ```
 
 为了减少锚定，两份独立方案应在相互可见前先完成各自第一版。
@@ -45,7 +45,7 @@ Cloud planner 可以：
 
 Cloud planner 不可以仅凭远程材料断言：
 
-- 本地 IsaacLab API、GPU、display、driver 或依赖一定可用；
+- 本地依赖 API、计算资源、display 或 driver 一定可用；
 - 未打包日志、resolved config、checkpoint 或 render 存在；
 - 某个 formal budget、denominator 或 gate 在生产环境一定可实现；
 - static evidence 等同于 runtime/training pass。
@@ -55,7 +55,7 @@ Cloud planner 不可以仅凭远程材料断言：
 Local planner 综合时至少检查：
 
 - 文件、符号、config key、checkpoint 和 artifact 路径是否真实；
-- IsaacLab/依赖 API 是否与本机版本相符；
+- 依赖 API 是否与本机版本相符；
 - GPU、worktree、输出目录和运行时长是否可执行；
 - gate 所需 denominator、telemetry、event 和 reducer 是否实际可观测；
 - cloud 方案是否把 descriptive finding 写成 causal/release gate；

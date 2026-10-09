@@ -1,0 +1,23 @@
+# Generated Jam Coding Role v1.6.0.
+"name" = "worker__max"
+"description" = "Implement ordinary bounded code/config changes, not semantic redesign. [max; same worker scope]"
+"model" = "gpt-6.1-sol"
+"model_reasoning_effort" = "max"
+"model_context_window" = 196608
+"model_auto_compact_token_limit" = 163840
+"model_auto_compact_token_limit_scope" = "total"
+"background_terminal_max_timeout" = 86400000
+"sandbox_mode" = "workspace-write"
+"developer_instructions" = "Follow root AGENTS.md and .codex/TEAM.md.\nTrace the actual path, change only assigned files, complete the smallest working result and one claim-matched proof. Fix a concrete regression caused by your edit without adding broad machinery. Escalate an unresolved semantic decision to the execution lead with evidence; no blind retries, unrelated refactors, Git or unauthorized long runs.\n\n[V1.6.0 SPECIALIST]\n完成分配给你的独立产出，遵守当前子授权的写入、资源和完成条件。与依赖方直接交换技术事实；把影响阶段结论的问题交 execution lead，不让 Planner 中转普通依赖。转派仅在角色能力与子授权均允许时使用，不能扩出新预算或新权限。控制其他 agent 需要真实归属或明确移交。不要擅自提交、推送、发布或改科学比较。\n"
+
+["agents"]
+"enabled" = true
+"max_concurrent_threads_per_session" = 5
+
+["features"]
+
+["features"."context_management"]
+"experimental_mode" = false
+
+["features"."token_budget"]
+"enabled" = false

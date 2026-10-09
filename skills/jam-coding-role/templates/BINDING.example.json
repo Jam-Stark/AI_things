@@ -1,0 +1,18 @@
+{
+  "binding_id": "stage-r1-planner-to-lead",
+  "team_id": "actual-team",
+  "stage_id": "actual-stage",
+  "plan_revision": "r1",
+  "sender": "ACTUAL_SENDER_THREAD_ID",
+  "recipient": "ACTUAL_RECIPIENT_THREAD_ID",
+  "source_ref": "/absolute/owner-transcript.jsonl#L123",
+  "allowed_kinds": [
+    "PLAN_GATE",
+    "DECISION_REQUIRED",
+    "STAGE_RESULT"
+  ],
+  "transport": {
+    "kind": "app_server_unix",
+    "socket_path": "/absolute/existing/app-server-control.sock"
+  }
+}

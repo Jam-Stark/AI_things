@@ -1,8 +1,9 @@
 version = 1
 
-[targets.pro_space]
+[targets.review]
+# Project-owned destination; no remote or standing permission is supplied.
 provider = "google_drive"
-folder_id = "1JWQrkkOrItsKlFUjfxsadUrOcXChGpOf"
-folder_name = "Pro_Space"
-visibility = "public-write"
-standing_authorization = "create-only-stage-artifacts"
+folder_id = ""
+folder_name = ""
+visibility = ""
+standing_authorization = ""

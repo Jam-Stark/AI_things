@@ -5,11 +5,11 @@ Universal behavior lives in `.ai/ROLE.md`; project facts live in `.ai/PROJECT.md
 
 ## Codex MultiAgentV2
 
-- Main `/root` is the control plane and final integrator.
-- Named subagents may communicate directly with `send_message` and `followup_task`.
+- The execution lead integrates the approved stage, as an independent root or a real child. Runtime identity and stage authority are separate.
+- Named agents exchange technical facts directly with `send_message`; lifecycle controls such as `followup_task` require actual creator/management authority.
 - P2P does not require team ledger.
 - Disk contract, lease, freeze and verdict state are optional under `.ai/TEAM_STATE.md`.
-- Main alone owns scope, acceptance, write/resource assignment, Git and external writes.
+- Owner/Planner sets stage boundaries and acceptance. The execution lead manages delegated writes/resources and integration; Git and external writes need explicit authority.
 - Project models and concurrency remain in `.codex/config.toml` and `.codex/agents/*.toml`.
 
 ### Codex lifecycle hooks
@@ -18,7 +18,7 @@ Universal behavior lives in `.ai/ROLE.md`; project facts live in `.ai/PROJECT.md
 - `PostToolUse` and `SessionStart` may use their supported common output shape.
 - Resolve repository-local hook scripts through `$(git rev-parse --show-toplevel)` because the session working directory may be a repository subdirectory.
 - In strict coordination mode, malformed JSON, an invalid `cwd`, a missing validator, or failed Git-root resolution is an enforcement error, not an implicit allow.
-- Persist only coordination metadata after tool use. Deliver pending long-run events once and archive them after SessionStart injection.
+- Persist real tool outcomes and retain pending long-run events until explicitly handled; SessionStart notification never archives unresolved events.
 - After installing or changing hooks, use Codex `/hooks` to review and trust the exact definitions before treating them as active.
 
 ## OpenCode / OMO
